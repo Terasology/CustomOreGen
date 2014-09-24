@@ -1,0 +1,9 @@
+{
+    "id" : "CustomOreGen",
+    "version" : "0.1.0",
+    "author" : "",
+    "displayName" : "CustomOreGen",
+    "description" : "",
+    "dependencies" : [],
+    "isServerSideOnly" : false
+}
