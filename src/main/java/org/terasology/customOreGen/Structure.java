@@ -16,14 +16,24 @@
 package org.terasology.customOreGen;
 
 import org.terasology.math.Vector3i;
-import org.terasology.world.block.Block;
 
 public interface Structure {
     void generateStructure(StructureCallback callback);
 
     public interface StructureCallback {
-        void replaceBlock(Vector3i position, float force, Block block);
+        /**
+         * Relative position
+         */
+        void replaceBlock(Vector3i position, StructureNodeType structureNodeType, float distanceFromCenter);
 
+        /**
+         * Relative position
+         *
+         * @param x
+         * @param y
+         * @param z
+         * @return
+         */
         boolean canReplace(int x, int y, int z);
     }
 }

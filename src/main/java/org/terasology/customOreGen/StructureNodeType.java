@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,17 +15,8 @@
  */
 package org.terasology.customOreGen;
 
-import org.terasology.world.block.Block;
-
-public class UniformPocketBlockProvider implements PocketStructureDefinition.PocketBlockProvider {
-    private Block block;
-
-    public UniformPocketBlockProvider(Block block) {
-        this.block = block;
-    }
-
-    @Override
-    public Block getBlock(float distanceFromCenter) {
-        return block;
-    }
+public enum StructureNodeType {
+    CLUSTER,
+    POCKET,
+    BRANCH
 }

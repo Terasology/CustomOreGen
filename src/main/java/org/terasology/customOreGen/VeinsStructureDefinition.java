@@ -18,7 +18,6 @@ package org.terasology.customOreGen;
 import org.terasology.math.Vector3i;
 import org.terasology.utilities.random.FastRandom;
 import org.terasology.utilities.random.Random;
-import org.terasology.world.block.Block;
 
 import java.util.List;
 
@@ -27,7 +26,6 @@ import java.util.List;
  * http://www.minecraftforum.net/topic/1107057-146v2-custom-ore-generation-updated-jan-5th/
  */
 public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinition {
-    private VeinsBlockProvider veinsBlockProvider;
 
     private PDist motherLodeRadius;
     private PDist motherLodeYLevel;
@@ -46,13 +44,12 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
     private PDist blockDensity;
     private PDist blockRadiusMultiplier;
 
-    public VeinsStructureDefinition(PDist frequency, VeinsBlockProvider veinsBlockProvider,
+    public VeinsStructureDefinition(PDist frequency,
                                     PDist motherLodeRadius, PDist motherLodeYLevel,
                                     PDist branchFrequency, PDist branchInclination, PDist branchLength, PDist branchHeightLimit,
                                     PDist segmentForkFrequency, PDist segmentForkLengthMultiplier, PDist segmentLength, PDist segmentAngle, PDist segmentRadius,
                                     PDist blockDensity, PDist blockRadiusMultiplier) {
         super(frequency);
-        this.veinsBlockProvider = veinsBlockProvider;
         this.motherLodeRadius = motherLodeRadius;
         this.motherLodeYLevel = motherLodeYLevel;
         this.branchFrequency = branchFrequency;
@@ -79,10 +76,10 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
     }
 
     @Override
-    protected void generateStructuresForChunk(List<Structure> result, Random random, Vector3i chunkSize, int xShift, int zShift) {
+    protected void generateStructuresForChunk(List<Structure> result, Random random, Vector3i chunkSize, int xShift, int yShift, int zShift) {
         // motherlode X,Y,Z coordinates within chunk
         float mlX = random.nextFloat() * chunkSize.x + xShift;
-        float mlY = motherLodeYLevel.getValue(random);
+        float mlY = motherLodeYLevel.getValue(random) + yShift;
         float mlZ = random.nextFloat() * chunkSize.z + zShift;
 
         // motherlode transformation matrix
@@ -362,7 +359,7 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
                                         continue; // density check failed
                                     }
 
-                                    callback.replaceBlock(new Vector3i(blockX, blockY, blockZ), 1, veinsBlockProvider.getBranchBlock());
+                                    callback.replaceBlock(new Vector3i(blockX, blockY, blockZ), StructureNodeType.BRANCH, 0f);
                                 }
                             }
                         }
@@ -575,16 +572,10 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
                         if (blockDensity.getIntValue(random) < 1) {
                             continue; // density check failed
                         }
-                        callback.replaceBlock(new Vector3i(x, y, z), 1, veinsBlockProvider.getClusterBlock((float) Math.sqrt(r2)));
+                        callback.replaceBlock(new Vector3i(x, y, z), StructureNodeType.CLUSTER, (float) Math.sqrt(r2));
                     }
                 }
             }
         }
-    }
-
-    public interface VeinsBlockProvider {
-        Block getClusterBlock(float distanceFromCenter);
-
-        Block getBranchBlock();
     }
 }

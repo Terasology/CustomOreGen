@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.terasology.customOreGen;
+package org.terasology.customOreGen.generation;
 
-import org.terasology.math.Vector3i;
-import org.terasology.utilities.random.FastRandom;
-import org.terasology.utilities.random.Random;
+import org.terasology.math.Region3i;
+import org.terasology.world.generation.Border3D;
+import org.terasology.world.generation.facets.base.BaseBooleanFieldFacet3D;
 
-public abstract class ChunkRandom {
-    public static Random getChunkRandom(long seed, Vector3i location, int salt) {
-        return new FastRandom(seed + salt * (97 * location.x + location.y + location.z));
+public class CaveFacet extends BaseBooleanFieldFacet3D {
+    public CaveFacet(Region3i targetRegion, Border3D border) {
+        super(targetRegion, border);
     }
 }

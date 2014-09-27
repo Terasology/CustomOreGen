@@ -28,7 +28,6 @@ import java.util.List;
  * http://www.minecraftforum.net/topic/1107057-146v2-custom-ore-generation-updated-jan-5th/
  */
 public class PocketStructureDefinition extends AbstractMultiChunkStructureDefinition {
-    private PocketBlockProvider blockProvider;
     private PDist pocketRadius;
     private PDist pocketThickness;
     private PDist pocketYLevel;
@@ -38,10 +37,9 @@ public class PocketStructureDefinition extends AbstractMultiChunkStructureDefini
     private PDist noiseLevel;
     private PDist volumeNoiseCutOff;
 
-    public PocketStructureDefinition(PocketBlockProvider blockProvider, PDist frequency, PDist pocketRadius, PDist pocketThickness, PDist pocketYLevel, PDist pocketAngle,
+    public PocketStructureDefinition(PDist frequency, PDist pocketRadius, PDist pocketThickness, PDist pocketYLevel, PDist pocketAngle,
                                      PDist blockRadiusMult, PDist blockDensity, PDist noiseLevel, PDist volumeNoiseCutOff) {
         super(frequency);
-        this.blockProvider = blockProvider;
         this.pocketRadius = pocketRadius;
         this.pocketThickness = pocketThickness;
         this.pocketYLevel = pocketYLevel;
@@ -62,10 +60,10 @@ public class PocketStructureDefinition extends AbstractMultiChunkStructureDefini
     }
 
     @Override
-    protected void generateStructuresForChunk(List<Structure> result, Random random, Vector3i chunkSize, int xShift, int zShift) {
+    protected void generateStructuresForChunk(List<Structure> result, Random random, Vector3i chunkSize, int xShift, int yShift, int zShift) {
         // cloud X,Y,Z coordinates within chunk
         float clX = random.nextFloat() * chunkSize.x + xShift;
-        float clY = pocketYLevel.getValue(random);
+        float clY = pocketYLevel.getValue(random) + yShift;
         float clZ = random.nextFloat() * chunkSize.z + zShift;
 
         // cloud transformation matrix
@@ -221,7 +219,7 @@ public class PocketStructureDefinition extends AbstractMultiChunkStructureDefini
                         }
 
                         // place block
-                        callback.replaceBlock(new Vector3i(x, y, z), 1, blockProvider.getBlock((float) Math.sqrt(r2)));
+                        callback.replaceBlock(new Vector3i(x, y, z), StructureNodeType.POCKET, (float) Math.sqrt(r2));
                     }
                 }
             }

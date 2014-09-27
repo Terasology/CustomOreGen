@@ -17,7 +17,6 @@ package org.terasology.customOreGen;
 
 import org.terasology.math.Vector3i;
 import org.terasology.utilities.random.Random;
-import org.terasology.world.block.Block;
 
 import java.util.List;
 
@@ -26,14 +25,11 @@ import java.util.List;
  * http://www.minecraftforum.net/topic/1107057-146v2-custom-ore-generation-updated-jan-5th/
  */
 public class ClusterStructureDefinition extends AbstractMultiChunkStructureDefinition {
-    private Block block;
-
     private PDist pocketYLevel;
     private PDist clusterRichness;
 
-    public ClusterStructureDefinition(PDist frequency, Block block, PDist clusterRichness, PDist pocketYLevel) {
+    public ClusterStructureDefinition(PDist frequency, PDist clusterRichness, PDist pocketYLevel) {
         super(frequency);
-        this.block = block;
         this.clusterRichness = clusterRichness;
         this.pocketYLevel = pocketYLevel;
     }
@@ -49,10 +45,10 @@ public class ClusterStructureDefinition extends AbstractMultiChunkStructureDefin
     }
 
     @Override
-    protected void generateStructuresForChunk(List<Structure> result, Random random, Vector3i chunkSize, int xShift, int zShift) {
+    protected void generateStructuresForChunk(List<Structure> result, Random random, Vector3i chunkSize, int xShift, int yShift, int zShift) {
         // cluster X,Y,Z coordinates within chunk
         float clX = random.nextFloat() * chunkSize.x + xShift;
-        float clY = pocketYLevel.getValue(random);
+        float clY = pocketYLevel.getValue(random) + yShift;
         float clZ = random.nextFloat() * chunkSize.z + zShift;
 
         result.add(new ClusterStructure(clX, clY, clZ, random, chunkSize));
@@ -135,7 +131,7 @@ public class ClusterStructureDefinition extends AbstractMultiChunkStructureDefin
                                 continue;
                             }
 
-                            callback.replaceBlock(new Vector3i(tgtX, tgtY, tgtZ), 1, block);
+                            callback.replaceBlock(new Vector3i(tgtX, tgtY, tgtZ), StructureNodeType.CLUSTER, 0f);
                         }
                     }
                 }

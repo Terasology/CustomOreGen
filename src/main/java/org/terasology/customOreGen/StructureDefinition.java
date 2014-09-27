@@ -15,11 +15,10 @@
  */
 package org.terasology.customOreGen;
 
-import org.terasology.world.chunks.CoreChunk;
-import org.terasology.world.generation.Region;
+import org.terasology.math.Region3i;
 
 import java.util.Collection;
 
 public interface StructureDefinition {
-    Collection<Structure> generateStructures(CoreChunk chunk, long seed, Region chunkRegion);
+    Collection<Structure> generateStructures(long seed, Region3i worldRegion);
 }
