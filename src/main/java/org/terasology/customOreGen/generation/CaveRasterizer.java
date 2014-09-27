@@ -25,6 +25,15 @@ import org.terasology.world.generation.Region;
 import org.terasology.world.generation.WorldRasterizer;
 
 public class CaveRasterizer implements WorldRasterizer {
+    String blockUri;
+
+    public CaveRasterizer() {
+    }
+
+    public CaveRasterizer(String blockUri) {
+        this.blockUri = blockUri;
+    }
+
     @Override
     public void initialize() {
     }
@@ -34,11 +43,14 @@ public class CaveRasterizer implements WorldRasterizer {
         CaveFacet caveFacet = chunkRegion.getFacet(CaveFacet.class);
 
         BlockManager blockManager = CoreRegistry.get(BlockManager.class);
-        Block stone = blockManager.getBlock("Core:Stone");
+        Block caveBlock = blockManager.getAir();
+        if (blockUri != null) {
+            caveBlock = blockManager.getBlock(blockUri);
+        }
 
         for (Vector3i position : ChunkConstants.CHUNK_REGION) {
             if (caveFacet.get(position)) {
-                chunk.setBlock(position, stone);
+                chunk.setBlock(position, caveBlock);
             }
         }
     }
