@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.terasology.customOreGen.generation;
+package org.terasology.caves.generation;
 
 import org.terasology.math.Vector3i;
 import org.terasology.registry.CoreRegistry;
@@ -23,11 +23,8 @@ import org.terasology.world.chunks.ChunkConstants;
 import org.terasology.world.chunks.CoreChunk;
 import org.terasology.world.generation.Region;
 import org.terasology.world.generation.WorldRasterizer;
-import org.terasology.world.generation.WorldRasterizerPlugin;
-import org.terasology.world.generator.plugin.RegisterPlugin;
 
-@RegisterPlugin
-public class CaveRasterizer implements WorldRasterizer, WorldRasterizerPlugin {
+public class CaveRasterizer implements WorldRasterizer {
     String blockUri;
 
     public CaveRasterizer() {

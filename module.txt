@@ -1,9 +1,9 @@
 {
     "id" : "CustomOreGen",
     "version" : "0.1.0",
-    "author" : "",
+    "author" : "Josharias",
     "displayName" : "CustomOreGen",
-    "description" : "",
+    "description" : "A library for adding ore generation",
     "dependencies" : [],
     "isServerSideOnly" : false
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.terasology.customOreGen.generation;
+package org.terasology.caves.generation;
 
 import org.terasology.math.Region3i;
 import org.terasology.world.generation.Border3D;

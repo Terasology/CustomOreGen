@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.terasology.customOreGen.generation;
+package org.terasology.caves.generation;
 
 import org.terasology.customOreGen.PDist;
 import org.terasology.customOreGen.Structure;
@@ -22,16 +22,14 @@ import org.terasology.customOreGen.VeinsStructureDefinition;
 import org.terasology.entitySystem.Component;
 import org.terasology.rendering.nui.properties.Range;
 import org.terasology.world.generation.ConfigurableFacetProvider;
-import org.terasology.world.generation.FacetProviderPlugin;
+import org.terasology.world.generation.FacetProvider;
 import org.terasology.world.generation.GeneratingRegion;
 import org.terasology.world.generation.Produces;
-import org.terasology.world.generator.plugin.RegisterPlugin;
 
 import java.util.Collection;
 
-@RegisterPlugin
 @Produces(CaveFacet.class)
-public class CaveFacetProvider implements ConfigurableFacetProvider, FacetProviderPlugin {
+public class CaveFacetProvider implements ConfigurableFacetProvider, FacetProvider {
     private long seed;
     private Configuration configuration = new Configuration();
 

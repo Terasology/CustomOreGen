@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.terasology.customOreGen.generation;
+package org.terasology.caves.generation;
 
 import org.terasology.customOreGen.Structure;
 import org.terasology.customOreGen.StructureNodeType;
