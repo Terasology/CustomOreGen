@@ -87,7 +87,7 @@ public class CaveFacetProvider implements ConfigurableFacetProvider, FacetProvid
         this.configuration = (Configuration) configuration;
     }
 
-    private class Configuration implements Component {
+    private static class Configuration implements Component {
         @Range(min = 0, max = 1f, increment = 0.01f, precision = 2, description = "Cave Frequency")
         public float frequency = 0.1f;
         @Range(min = 0, max = 25f, increment = 1f, precision = 0, description = "Cave Radius")
