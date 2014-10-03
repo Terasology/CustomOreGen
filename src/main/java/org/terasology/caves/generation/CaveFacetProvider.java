@@ -31,7 +31,7 @@ import java.util.Collection;
 @Produces(CaveFacet.class)
 public class CaveFacetProvider implements ConfigurableFacetProvider, FacetProvider {
     private long seed;
-    private Configuration configuration = new Configuration();
+    private CaveFacetProviderConfiguration configuration = new CaveFacetProviderConfiguration();
 
     @Override
     public void setSeed(long seed) {
@@ -84,10 +84,10 @@ public class CaveFacetProvider implements ConfigurableFacetProvider, FacetProvid
 
     @Override
     public void setConfiguration(Component configuration) {
-        this.configuration = (Configuration) configuration;
+        this.configuration = (CaveFacetProviderConfiguration) configuration;
     }
 
-    private static class Configuration implements Component {
+    private static class CaveFacetProviderConfiguration implements Component {
         @Range(min = 0, max = 1f, increment = 0.01f, precision = 2, description = "Cave Frequency")
         public float frequency = 0.1f;
         @Range(min = 0, max = 25f, increment = 1f, precision = 0, description = "Cave Radius")
