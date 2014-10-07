@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.terasology.caves.generation;
+package org.terasology.sampleCaves.generation;
 
 import org.terasology.customOreGen.PDist;
 import org.terasology.customOreGen.Structure;
@@ -28,8 +28,8 @@ import org.terasology.world.generation.Produces;
 
 import java.util.Collection;
 
-@Produces(CaveFacet.class)
-public class CaveFacetProvider implements ConfigurableFacetProvider, FacetProvider {
+@Produces(SampleCaveFacet.class)
+public class SampleCaveFacetProvider implements ConfigurableFacetProvider, FacetProvider {
     private long seed;
     private CaveFacetProviderConfiguration configuration = new CaveFacetProviderConfiguration();
 
@@ -40,7 +40,7 @@ public class CaveFacetProvider implements ConfigurableFacetProvider, FacetProvid
 
     @Override
     public void process(GeneratingRegion region) {
-        CaveFacet facet = new CaveFacet(region.getRegion(), region.getBorderForFacet(CaveFacet.class));
+        SampleCaveFacet facet = new SampleCaveFacet(region.getRegion(), region.getBorderForFacet(SampleCaveFacet.class));
 
         /* AnotherWorld
         PDist caveFrequency = new PDist(0.1f, 0f);
@@ -65,10 +65,10 @@ public class CaveFacetProvider implements ConfigurableFacetProvider, FacetProvid
         Collection<Structure> structures = structureDefinition.generateStructures(seed, region.getRegion());
 
         for (Structure structure : structures) {
-            structure.generateStructure(new CaveStructureCallback(facet));
+            structure.generateStructure(new SampleCaveStructureCallback(facet));
         }
 
-        region.setRegionFacet(CaveFacet.class, facet);
+        region.setRegionFacet(SampleCaveFacet.class, facet);
     }
 
 

@@ -131,7 +131,7 @@ public class ClusterStructureDefinition extends AbstractMultiChunkStructureDefin
                                 continue;
                             }
 
-                            callback.replaceBlock(new Vector3i(tgtX, tgtY, tgtZ), StructureNodeType.CLUSTER, 0f);
+                            callback.replaceBlock(new Vector3i(tgtX, tgtY, tgtZ), StructureNodeType.CLUSTER, Vector3i.zero());
                         }
                     }
                 }

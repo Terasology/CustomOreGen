@@ -76,4 +76,12 @@ public abstract class AbstractMultiChunkStructureDefinition implements Structure
     protected abstract int getGeneratorSalt();
 
     protected abstract void generateStructuresForChunk(List<Structure> result, Random random, Vector3i chunkSize, int xShift, int yShift, int zShift);
+
+    protected Vector3i getRelativePosition(Vector3i blockPosition, Vector3i originMinPosition, Vector3i originMaxPosition) {
+        Vector3i relativePosition = originMaxPosition.clone();
+        relativePosition.add(originMinPosition);
+        relativePosition.divide(2);
+        relativePosition.sub(blockPosition);
+        return relativePosition;
+    }
 }

@@ -219,7 +219,8 @@ public class PocketStructureDefinition extends AbstractMultiChunkStructureDefini
                         }
 
                         // place block
-                        callback.replaceBlock(new Vector3i(x, y, z), StructureNodeType.POCKET, (float) Math.sqrt(r2));
+                        Vector3i blockPosition = new Vector3i(x, y, z);
+                        callback.replaceBlock(blockPosition, StructureNodeType.POCKET, getRelativePosition(blockPosition, minPosition, maxPosition));
                     }
                 }
             }

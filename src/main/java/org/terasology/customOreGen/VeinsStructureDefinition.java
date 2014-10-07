@@ -359,7 +359,7 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
                                         continue; // density check failed
                                     }
 
-                                    callback.replaceBlock(new Vector3i(blockX, blockY, blockZ), StructureNodeType.BRANCH, 0f);
+                                    callback.replaceBlock(new Vector3i(blockX, blockY, blockZ), StructureNodeType.BRANCH, Vector3i.zero());
                                 }
                             }
                         }
@@ -572,7 +572,9 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
                         if (blockDensity.getIntValue(random) < 1) {
                             continue; // density check failed
                         }
-                        callback.replaceBlock(new Vector3i(x, y, z), StructureNodeType.CLUSTER, (float) Math.sqrt(r2));
+
+                        Vector3i blockPosition = new Vector3i(x, y, z);
+                        callback.replaceBlock(blockPosition, StructureNodeType.CLUSTER, getRelativePosition(blockPosition, minPosition, maxPosition));
                     }
                 }
             }

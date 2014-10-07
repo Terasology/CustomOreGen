@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.terasology.caves.generation;
+package org.terasology.sampleCaves.generation;
 
 import org.terasology.customOreGen.Structure;
 import org.terasology.customOreGen.StructureNodeType;
 import org.terasology.math.Vector3i;
 import org.terasology.world.generation.facets.base.BaseBooleanFieldFacet3D;
 
-public class CaveStructureCallback implements Structure.StructureCallback {
+public class SampleCaveStructureCallback implements Structure.StructureCallback {
     private BaseBooleanFieldFacet3D facet;
 
-    public CaveStructureCallback(BaseBooleanFieldFacet3D facet) {
+    public SampleCaveStructureCallback(BaseBooleanFieldFacet3D facet) {
         this.facet = facet;
     }
 
@@ -33,7 +33,7 @@ public class CaveStructureCallback implements Structure.StructureCallback {
     }
 
     @Override
-    public void replaceBlock(Vector3i position, StructureNodeType structureNodeType, float distanceFromCenter) {
+    public void replaceBlock(Vector3i position, StructureNodeType structureNodeType, Vector3i distanceToCenter) {
         if (canReplace(position.x, position.y, position.z)) {
             facet.set(position, true);
         }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.terasology.caves.generation;
+package org.terasology.sampleCaves.generation;
 
 import org.terasology.math.Vector3i;
 import org.terasology.registry.CoreRegistry;
@@ -24,13 +24,13 @@ import org.terasology.world.chunks.CoreChunk;
 import org.terasology.world.generation.Region;
 import org.terasology.world.generation.WorldRasterizer;
 
-public class CaveRasterizer implements WorldRasterizer {
+public class SampleCaveRasterizer implements WorldRasterizer {
     String blockUri;
 
-    public CaveRasterizer() {
+    public SampleCaveRasterizer() {
     }
 
-    public CaveRasterizer(String blockUri) {
+    public SampleCaveRasterizer(String blockUri) {
         this.blockUri = blockUri;
     }
 
@@ -40,7 +40,7 @@ public class CaveRasterizer implements WorldRasterizer {
 
     @Override
     public void generateChunk(CoreChunk chunk, Region chunkRegion) {
-        CaveFacet caveFacet = chunkRegion.getFacet(CaveFacet.class);
+        SampleCaveFacet sampleCaveFacet = chunkRegion.getFacet(SampleCaveFacet.class);
 
         BlockManager blockManager = CoreRegistry.get(BlockManager.class);
         Block caveBlock = blockManager.getAir();
@@ -49,7 +49,7 @@ public class CaveRasterizer implements WorldRasterizer {
         }
 
         for (Vector3i position : ChunkConstants.CHUNK_REGION) {
-            if (caveFacet.get(position)) {
+            if (sampleCaveFacet.get(position)) {
                 chunk.setBlock(position, caveBlock);
             }
         }

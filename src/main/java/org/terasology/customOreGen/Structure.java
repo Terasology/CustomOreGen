@@ -24,7 +24,7 @@ public interface Structure {
         /**
          * Relative position
          */
-        void replaceBlock(Vector3i position, StructureNodeType structureNodeType, float distanceFromCenter);
+        void replaceBlock(Vector3i position, StructureNodeType structureNodeType, Vector3i distanceToCenter);
 
         /**
          * Relative position
