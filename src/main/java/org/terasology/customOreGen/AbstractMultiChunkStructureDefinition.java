@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 MovingBlocks
+ * Copyright 2015 MovingBlocks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,7 +78,9 @@ public abstract class AbstractMultiChunkStructureDefinition implements Structure
     protected abstract void generateStructuresForChunk(List<Structure> result, Random random, Vector3i chunkSize, int xShift, int yShift, int zShift);
 
     protected Vector3i getRelativePosition(Vector3i blockPosition, Vector3i originMinPosition, Vector3i originMaxPosition) {
-        Vector3i relativePosition = originMaxPosition.clone();
+        // TODO: Tweaked for engine compile fix (update to TeraMath), may need review
+        //Vector3i relativePosition = originMaxPosition.clone();
+        Vector3i relativePosition = new Vector3i(originMaxPosition.x, originMaxPosition.y, originMaxPosition.z);
         relativePosition.add(originMinPosition);
         relativePosition.divide(2);
         relativePosition.sub(blockPosition);
