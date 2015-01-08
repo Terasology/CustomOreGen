@@ -78,9 +78,7 @@ public abstract class AbstractMultiChunkStructureDefinition implements Structure
     protected abstract void generateStructuresForChunk(List<Structure> result, Random random, Vector3i chunkSize, int xShift, int yShift, int zShift);
 
     protected Vector3i getRelativePosition(Vector3i blockPosition, Vector3i originMinPosition, Vector3i originMaxPosition) {
-        // TODO: Tweaked for engine compile fix (update to TeraMath), may need review
-        //Vector3i relativePosition = originMaxPosition.clone();
-        Vector3i relativePosition = new Vector3i(originMaxPosition.x, originMaxPosition.y, originMaxPosition.z);
+        Vector3i relativePosition = new Vector3i(originMaxPosition);
         relativePosition.add(originMinPosition);
         relativePosition.divide(2);
         relativePosition.sub(blockPosition);
