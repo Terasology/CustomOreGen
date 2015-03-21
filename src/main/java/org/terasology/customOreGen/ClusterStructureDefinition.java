@@ -15,7 +15,7 @@
  */
 package org.terasology.customOreGen;
 
-import org.terasology.math.Vector3i;
+import org.terasology.math.geom.Vector3i;
 import org.terasology.utilities.random.Random;
 
 import java.util.List;

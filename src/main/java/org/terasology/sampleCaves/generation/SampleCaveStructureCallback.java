@@ -17,7 +17,7 @@ package org.terasology.sampleCaves.generation;
 
 import org.terasology.customOreGen.Structure;
 import org.terasology.customOreGen.StructureNodeType;
-import org.terasology.math.Vector3i;
+import org.terasology.math.geom.Vector3i;
 import org.terasology.world.generation.facets.base.BaseBooleanFieldFacet3D;
 
 public class SampleCaveStructureCallback implements Structure.StructureCallback {

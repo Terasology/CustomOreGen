@@ -17,7 +17,7 @@ package org.terasology.customOreGen;
 
 import org.terasology.math.Region3i;
 import org.terasology.math.TeraMath;
-import org.terasology.math.Vector3i;
+import org.terasology.math.geom.Vector3i;
 import org.terasology.utilities.random.Random;
 
 import java.util.Collection;
@@ -80,7 +80,7 @@ public abstract class AbstractMultiChunkStructureDefinition implements Structure
     protected Vector3i getRelativePosition(Vector3i blockPosition, Vector3i originMinPosition, Vector3i originMaxPosition) {
         Vector3i relativePosition = new Vector3i(originMaxPosition);
         relativePosition.add(originMinPosition);
-        relativePosition.divide(2);
+        relativePosition.div(2);
         relativePosition.sub(blockPosition);
         return relativePosition;
     }
