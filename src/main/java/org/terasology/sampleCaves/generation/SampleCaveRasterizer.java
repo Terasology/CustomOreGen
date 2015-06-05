@@ -43,7 +43,7 @@ public class SampleCaveRasterizer implements WorldRasterizer {
         SampleCaveFacet sampleCaveFacet = chunkRegion.getFacet(SampleCaveFacet.class);
 
         BlockManager blockManager = CoreRegistry.get(BlockManager.class);
-        Block caveBlock = blockManager.getAir();
+        Block caveBlock = blockManager.getBlock(BlockManager.AIR_ID);
         if (blockUri != null) {
             caveBlock = blockManager.getBlock(blockUri);
         }
