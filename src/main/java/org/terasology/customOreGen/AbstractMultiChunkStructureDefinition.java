@@ -15,8 +15,8 @@
  */
 package org.terasology.customOreGen;
 
+import org.terasology.math.ChunkMath;
 import org.terasology.math.Region3i;
-import org.terasology.math.TeraMath;
 import org.terasology.math.geom.Vector3i;
 import org.terasology.utilities.random.Random;
 
@@ -34,7 +34,7 @@ public abstract class AbstractMultiChunkStructureDefinition implements Structure
     @Override
     public final Collection<Structure> generateStructures(long seed, Region3i worldRegion) {
         List<Structure> result = new LinkedList<>();
-        Vector3i chunkPosition = TeraMath.calcChunkPos(worldRegion.center());
+        Vector3i chunkPosition = ChunkMath.calcChunkPos(worldRegion.center());
         float maxRange = getMaxRange();
         Vector3i chunkSize = worldRegion.size();
 
