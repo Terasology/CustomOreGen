@@ -355,11 +355,9 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
                         for (int blockX = baseX; blockX < innerStep + baseX; blockX++) {
                             for (int blockY = baseY; blockY < innerStep + baseY; blockY++) {
                                 for (int blockZ = baseZ; blockZ < innerStep + baseZ; blockZ++) {
-                                    if (blockDensity.getIntValue(random) < 1) {
-                                        continue; // density check failed
+                                    if (callback.canReplace(blockX, blockY, blockZ) && blockDensity.getIntValue(random) >= 1) {
+                                        callback.replaceBlock(new Vector3i(blockX, blockY, blockZ), StructureNodeType.BRANCH, Vector3i.zero());
                                     }
-
-                                    callback.replaceBlock(new Vector3i(blockX, blockY, blockZ), StructureNodeType.BRANCH, Vector3i.zero());
                                 }
                             }
                         }
