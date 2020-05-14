@@ -1,9 +1,10 @@
 {
-    "id" : "CustomOreGen",
-    "version" : "1.0.0-SNAPSHOT",
-    "author" : "Josharias",
-    "displayName" : "CustomOreGen",
-    "description" : "A library for adding ore generation",
-    "dependencies" : [],
-    "isServerSideOnly" : false
+    "id": "CustomOreGen",
+    "version": "1.0.0",
+    "author": "Josharias",
+    "displayName": "CustomOreGen",
+    "description": "A library for adding ore generation",
+    "dependencies": [],
+    "isServerSideOnly": false,
+    "isLibrary": true
 }
