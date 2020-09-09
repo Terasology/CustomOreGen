@@ -1,29 +1,15 @@
-/*
- * Copyright 2014 MovingBlocks
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2020 The Terasology Foundation
+// SPDX-License-Identifier: Apache-2.0
 package org.terasology.customOreGen;
 
 /**
- * Represents a 3D single-precision Affine transformation.
- * Useful for 3D geometric calculations.
+ * Represents a 3D single-precision Affine transformation. Useful for 3D geometric calculations.
  */
 public class Transform implements Cloneable {
     /**
      * row-major matrix (row index is most significant)
      */
-    private float[] mat;
+    private final float[] mat;
 
     /**
      * Creates a new identity transformation
@@ -44,6 +30,49 @@ public class Transform implements Cloneable {
      */
     protected Transform(float[] matrix) {
         mat = matrix;
+    }
+
+    /**
+     * In-place matrix/matrix multiplication:  base = base * mult
+     */
+    protected static void mult(float[] base, final float[] mult) {
+        //
+        float n00 = base[0] * mult[0] + base[1] * mult[4] + base[2] * mult[8] + base[3] * mult[12];
+        float n01 = base[0] * mult[1] + base[1] * mult[5] + base[2] * mult[9] + base[3] * mult[13];
+        float n02 = base[0] * mult[2] + base[1] * mult[6] + base[2] * mult[10] + base[3] * mult[14];
+        float n03 = base[0] * mult[3] + base[1] * mult[7] + base[2] * mult[11] + base[3] * mult[15];
+        //
+        float n04 = base[4] * mult[0] + base[5] * mult[4] + base[6] * mult[8] + base[7] * mult[12];
+        float n05 = base[4] * mult[1] + base[5] * mult[5] + base[6] * mult[9] + base[7] * mult[13];
+        float n06 = base[4] * mult[2] + base[5] * mult[6] + base[6] * mult[10] + base[7] * mult[14];
+        float n07 = base[4] * mult[3] + base[5] * mult[7] + base[6] * mult[11] + base[7] * mult[15];
+        //
+        float n08 = base[8] * mult[0] + base[9] * mult[4] + base[10] * mult[8] + base[11] * mult[12];
+        float n09 = base[8] * mult[1] + base[9] * mult[5] + base[10] * mult[9] + base[11] * mult[13];
+        float n10 = base[8] * mult[2] + base[9] * mult[6] + base[10] * mult[10] + base[11] * mult[14];
+        float n11 = base[8] * mult[3] + base[9] * mult[7] + base[10] * mult[11] + base[11] * mult[15];
+        //
+        float n12 = base[12] * mult[0] + base[13] * mult[4] + base[14] * mult[8] + base[15] * mult[12];
+        float n13 = base[12] * mult[1] + base[13] * mult[5] + base[14] * mult[9] + base[15] * mult[13];
+        float n14 = base[12] * mult[2] + base[13] * mult[6] + base[14] * mult[10] + base[15] * mult[14];
+        float n15 = base[12] * mult[3] + base[13] * mult[7] + base[14] * mult[11] + base[15] * mult[15];
+        //
+        base[0] = n00;
+        base[1] = n01;
+        base[2] = n02;
+        base[3] = n03;
+        base[4] = n04;
+        base[5] = n05;
+        base[6] = n06;
+        base[7] = n07;
+        base[8] = n08;
+        base[9] = n09;
+        base[10] = n10;
+        base[11] = n11;
+        base[12] = n12;
+        base[13] = n13;
+        base[14] = n14;
+        base[15] = n15;
     }
 
     /**
@@ -123,7 +152,7 @@ public class Transform implements Cloneable {
         float x = vector[0]*mat[0] + vector[1]*mat[4] + vector[2]*mat[8]  + vw*mat[12];
         float y = vector[0]*mat[1] + vector[1]*mat[5] + vector[2]*mat[9]  + vw*mat[13];
         float z = vector[0]*mat[2] + vector[1]*mat[6] + vector[2]*mat[10] + vw*mat[14];
-        float w = vector[0]*mat[3] + vector[1]*mat[7] + vector[2]*mat[11] + vw*mat[15];        
+        float w = vector[0]*mat[3] + vector[1]*mat[7] + vector[2]*mat[11] + vw*mat[15];
         */
         // place results in original vector
         vector[0] = x;
@@ -138,9 +167,9 @@ public class Transform implements Cloneable {
      * Apply transformation to a list of local vectors
      *
      * @param vectors Array containing consecutive vectors.  Coordinate order is {x,y,z,w}.
-     * @param size    Number of coordinates per vector.  Must be between 1 and 4.
-     * @param base    Starting index in array
-     * @param count   Number of vectors to read from array
+     * @param size Number of coordinates per vector.  Must be between 1 and 4.
+     * @param base Starting index in array
+     * @param count Number of vectors to read from array
      * @throws RuntimeError if size is invalid or array is too short to contain the requested vectors.
      */
     public void transformVectors(float[] vectors, int size, int base, int count) {
@@ -558,7 +587,8 @@ public class Transform implements Cloneable {
         float invariantZNormalised = invariantZ;
 
         // normalize invariant axis
-        float ri = invariantXNormalised * invariantXNormalised + invariantYNormalised * invariantYNormalised + invariantZNormalised * invariantZNormalised;
+        float ri =
+                invariantXNormalised * invariantXNormalised + invariantYNormalised * invariantYNormalised + invariantZNormalised * invariantZNormalised;
         if (ri == 0) {
             throw new RuntimeException("Attempting to shear with a null invariant vector");
         }
@@ -569,14 +599,16 @@ public class Transform implements Cloneable {
             invariantZNormalised /= ri;
         }
         // orthogonalize shear axis
-        float p = shearXNormalised * invariantXNormalised + shearYNormalised * invariantYNormalised + shearZNormalised * invariantZNormalised;
+        float p =
+                shearXNormalised * invariantXNormalised + shearYNormalised * invariantYNormalised + shearZNormalised * invariantZNormalised;
         if (p != 0) {
             shearXNormalised -= p * invariantXNormalised;
             shearYNormalised -= p * invariantYNormalised;
             shearZNormalised -= p * invariantZNormalised;
         }
         // normalize shear axis
-        float rs = shearXNormalised * shearXNormalised + shearYNormalised * shearYNormalised + shearZNormalised * shearZNormalised;
+        float rs =
+                shearXNormalised * shearXNormalised + shearYNormalised * shearYNormalised + shearZNormalised * shearZNormalised;
         if (rs == 0) {
             throw new RuntimeException("Attempting to shear with a null or parallel shear vector");
         }
@@ -703,25 +735,41 @@ public class Transform implements Cloneable {
             throw new RuntimeException("Attempting to invert a singular matrix");
         }
         //
-        float n00 = mat[5] * (mat[10] * mat[15] - mat[11] * mat[14]) + mat[6] * (mat[11] * mat[13] - mat[15] * mat[9]) + mat[7] * (mat[14] * mat[9] - mat[10] * mat[13]);
-        float n01 = mat[1] * (mat[11] * mat[14] - mat[10] * mat[15]) + mat[2] * (mat[15] * mat[9] - mat[11] * mat[13]) + mat[3] * (mat[10] * mat[13] - mat[14] * mat[9]);
-        float n02 = mat[1] * (mat[15] * mat[6] - mat[14] * mat[7]) + mat[2] * (mat[13] * mat[7] - mat[15] * mat[5]) + mat[3] * (mat[14] * mat[5] - mat[13] * mat[6]);
-        float n03 = mat[1] * (mat[10] * mat[7] - mat[11] * mat[6]) + mat[2] * (mat[11] * mat[5] - mat[7] * mat[9]) + mat[3] * (mat[6] * mat[9] - mat[10] * mat[5]);
+        float n00 =
+                mat[5] * (mat[10] * mat[15] - mat[11] * mat[14]) + mat[6] * (mat[11] * mat[13] - mat[15] * mat[9]) + mat[7] * (mat[14] * mat[9] - mat[10] * mat[13]);
+        float n01 =
+                mat[1] * (mat[11] * mat[14] - mat[10] * mat[15]) + mat[2] * (mat[15] * mat[9] - mat[11] * mat[13]) + mat[3] * (mat[10] * mat[13] - mat[14] * mat[9]);
+        float n02 =
+                mat[1] * (mat[15] * mat[6] - mat[14] * mat[7]) + mat[2] * (mat[13] * mat[7] - mat[15] * mat[5]) + mat[3] * (mat[14] * mat[5] - mat[13] * mat[6]);
+        float n03 =
+                mat[1] * (mat[10] * mat[7] - mat[11] * mat[6]) + mat[2] * (mat[11] * mat[5] - mat[7] * mat[9]) + mat[3] * (mat[6] * mat[9] - mat[10] * mat[5]);
         //
-        float n04 = mat[4] * (mat[11] * mat[14] - mat[10] * mat[15]) + mat[6] * (mat[15] * mat[8] - mat[11] * mat[12]) + mat[7] * (mat[10] * mat[12] - mat[14] * mat[8]);
-        float n05 = mat[0] * (mat[10] * mat[15] - mat[11] * mat[14]) + mat[2] * (mat[11] * mat[12] - mat[15] * mat[8]) + mat[3] * (mat[14] * mat[8] - mat[10] * mat[12]);
-        float n06 = mat[0] * (mat[14] * mat[7] - mat[15] * mat[6]) + mat[2] * (mat[15] * mat[4] - mat[12] * mat[7]) + mat[3] * (mat[12] * mat[6] - mat[14] * mat[4]);
-        float n07 = mat[0] * (mat[11] * mat[6] - mat[10] * mat[7]) + mat[2] * (mat[7] * mat[8] - mat[11] * mat[4]) + mat[3] * (mat[10] * mat[4] - mat[6] * mat[8]);
+        float n04 =
+                mat[4] * (mat[11] * mat[14] - mat[10] * mat[15]) + mat[6] * (mat[15] * mat[8] - mat[11] * mat[12]) + mat[7] * (mat[10] * mat[12] - mat[14] * mat[8]);
+        float n05 =
+                mat[0] * (mat[10] * mat[15] - mat[11] * mat[14]) + mat[2] * (mat[11] * mat[12] - mat[15] * mat[8]) + mat[3] * (mat[14] * mat[8] - mat[10] * mat[12]);
+        float n06 =
+                mat[0] * (mat[14] * mat[7] - mat[15] * mat[6]) + mat[2] * (mat[15] * mat[4] - mat[12] * mat[7]) + mat[3] * (mat[12] * mat[6] - mat[14] * mat[4]);
+        float n07 =
+                mat[0] * (mat[11] * mat[6] - mat[10] * mat[7]) + mat[2] * (mat[7] * mat[8] - mat[11] * mat[4]) + mat[3] * (mat[10] * mat[4] - mat[6] * mat[8]);
         //
-        float n08 = mat[4] * (mat[15] * mat[9] - mat[11] * mat[13]) + mat[5] * (mat[11] * mat[12] - mat[15] * mat[8]) + mat[7] * (mat[13] * mat[8] - mat[12] * mat[9]);
-        float n09 = mat[0] * (mat[11] * mat[13] - mat[15] * mat[9]) + mat[1] * (mat[15] * mat[8] - mat[11] * mat[12]) + mat[3] * (mat[12] * mat[9] - mat[13] * mat[8]);
-        float n10 = mat[0] * (mat[15] * mat[5] - mat[13] * mat[7]) + mat[1] * (mat[12] * mat[7] - mat[15] * mat[4]) + mat[3] * (mat[13] * mat[4] - mat[12] * mat[5]);
-        float n11 = mat[0] * (mat[7] * mat[9] - mat[11] * mat[5]) + mat[1] * (mat[11] * mat[4] - mat[7] * mat[8]) + mat[3] * (mat[5] * mat[8] - mat[4] * mat[9]);
+        float n08 =
+                mat[4] * (mat[15] * mat[9] - mat[11] * mat[13]) + mat[5] * (mat[11] * mat[12] - mat[15] * mat[8]) + mat[7] * (mat[13] * mat[8] - mat[12] * mat[9]);
+        float n09 =
+                mat[0] * (mat[11] * mat[13] - mat[15] * mat[9]) + mat[1] * (mat[15] * mat[8] - mat[11] * mat[12]) + mat[3] * (mat[12] * mat[9] - mat[13] * mat[8]);
+        float n10 =
+                mat[0] * (mat[15] * mat[5] - mat[13] * mat[7]) + mat[1] * (mat[12] * mat[7] - mat[15] * mat[4]) + mat[3] * (mat[13] * mat[4] - mat[12] * mat[5]);
+        float n11 =
+                mat[0] * (mat[7] * mat[9] - mat[11] * mat[5]) + mat[1] * (mat[11] * mat[4] - mat[7] * mat[8]) + mat[3] * (mat[5] * mat[8] - mat[4] * mat[9]);
         //
-        float n12 = mat[4] * (mat[10] * mat[13] - mat[14] * mat[9]) + mat[5] * (mat[14] * mat[8] - mat[10] * mat[12]) + mat[6] * (mat[12] * mat[9] - mat[13] * mat[8]);
-        float n13 = mat[0] * (mat[14] * mat[9] - mat[10] * mat[13]) + mat[1] * (mat[10] * mat[12] - mat[14] * mat[8]) + mat[2] * (mat[13] * mat[8] - mat[12] * mat[9]);
-        float n14 = mat[0] * (mat[13] * mat[6] - mat[14] * mat[5]) + mat[1] * (mat[14] * mat[4] - mat[12] * mat[6]) + mat[2] * (mat[12] * mat[5] - mat[13] * mat[4]);
-        float n15 = mat[0] * (mat[10] * mat[5] - mat[6] * mat[9]) + mat[1] * (mat[6] * mat[8] - mat[10] * mat[4]) + mat[2] * (mat[4] * mat[9] - mat[5] * mat[8]);
+        float n12 =
+                mat[4] * (mat[10] * mat[13] - mat[14] * mat[9]) + mat[5] * (mat[14] * mat[8] - mat[10] * mat[12]) + mat[6] * (mat[12] * mat[9] - mat[13] * mat[8]);
+        float n13 =
+                mat[0] * (mat[14] * mat[9] - mat[10] * mat[13]) + mat[1] * (mat[10] * mat[12] - mat[14] * mat[8]) + mat[2] * (mat[13] * mat[8] - mat[12] * mat[9]);
+        float n14 =
+                mat[0] * (mat[13] * mat[6] - mat[14] * mat[5]) + mat[1] * (mat[14] * mat[4] - mat[12] * mat[6]) + mat[2] * (mat[12] * mat[5] - mat[13] * mat[4]);
+        float n15 =
+                mat[0] * (mat[10] * mat[5] - mat[6] * mat[9]) + mat[1] * (mat[6] * mat[8] - mat[10] * mat[4]) + mat[2] * (mat[4] * mat[9] - mat[5] * mat[8]);
         //
         mat[0] = n00 / det;
         mat[1] = n01 / det;
@@ -776,50 +824,9 @@ public class Transform implements Cloneable {
      */
     @Override
     public String toString() {
-        return String.format("{%#7.4f,%#7.4f,%#7.4f,%#7.4f},\n{%#7.4f,%#7.4f,%#7.4f,%#7.4f},\n{%#7.4f,%#7.4f,%#7.4f,%#7.4f},\n{%#7.4f,%#7.4f,%#7.4f,%#7.4f}",
-                mat[0], mat[1], mat[2], mat[3], mat[4], mat[5], mat[6], mat[7], mat[8], mat[9], mat[10], mat[11], mat[12], mat[13], mat[14], mat[15]);
-    }
-
-    /**
-     * In-place matrix/matrix multiplication:  base = base * mult
-     */
-    protected static void mult(float[] base, final float[] mult) {
-        //
-        float n00 = base[0] * mult[0] + base[1] * mult[4] + base[2] * mult[8] + base[3] * mult[12];
-        float n01 = base[0] * mult[1] + base[1] * mult[5] + base[2] * mult[9] + base[3] * mult[13];
-        float n02 = base[0] * mult[2] + base[1] * mult[6] + base[2] * mult[10] + base[3] * mult[14];
-        float n03 = base[0] * mult[3] + base[1] * mult[7] + base[2] * mult[11] + base[3] * mult[15];
-        //
-        float n04 = base[4] * mult[0] + base[5] * mult[4] + base[6] * mult[8] + base[7] * mult[12];
-        float n05 = base[4] * mult[1] + base[5] * mult[5] + base[6] * mult[9] + base[7] * mult[13];
-        float n06 = base[4] * mult[2] + base[5] * mult[6] + base[6] * mult[10] + base[7] * mult[14];
-        float n07 = base[4] * mult[3] + base[5] * mult[7] + base[6] * mult[11] + base[7] * mult[15];
-        //
-        float n08 = base[8] * mult[0] + base[9] * mult[4] + base[10] * mult[8] + base[11] * mult[12];
-        float n09 = base[8] * mult[1] + base[9] * mult[5] + base[10] * mult[9] + base[11] * mult[13];
-        float n10 = base[8] * mult[2] + base[9] * mult[6] + base[10] * mult[10] + base[11] * mult[14];
-        float n11 = base[8] * mult[3] + base[9] * mult[7] + base[10] * mult[11] + base[11] * mult[15];
-        //
-        float n12 = base[12] * mult[0] + base[13] * mult[4] + base[14] * mult[8] + base[15] * mult[12];
-        float n13 = base[12] * mult[1] + base[13] * mult[5] + base[14] * mult[9] + base[15] * mult[13];
-        float n14 = base[12] * mult[2] + base[13] * mult[6] + base[14] * mult[10] + base[15] * mult[14];
-        float n15 = base[12] * mult[3] + base[13] * mult[7] + base[14] * mult[11] + base[15] * mult[15];
-        //
-        base[0] = n00;
-        base[1] = n01;
-        base[2] = n02;
-        base[3] = n03;
-        base[4] = n04;
-        base[5] = n05;
-        base[6] = n06;
-        base[7] = n07;
-        base[8] = n08;
-        base[9] = n09;
-        base[10] = n10;
-        base[11] = n11;
-        base[12] = n12;
-        base[13] = n13;
-        base[14] = n14;
-        base[15] = n15;
+        return String.format("{%#7.4f,%#7.4f,%#7.4f,%#7.4f},\n{%#7.4f,%#7.4f,%#7.4f,%#7.4f},\n{%#7.4f,%#7.4f,%#7.4f," +
+                        "%#7.4f},\n{%#7.4f,%#7.4f,%#7.4f,%#7.4f}",
+                mat[0], mat[1], mat[2], mat[3], mat[4], mat[5], mat[6], mat[7], mat[8], mat[9], mat[10], mat[11],
+                mat[12], mat[13], mat[14], mat[15]);
     }
 }

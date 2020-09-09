@@ -1,32 +1,19 @@
-/*
- * Copyright 2014 MovingBlocks
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2020 The Terasology Foundation
+// SPDX-License-Identifier: Apache-2.0
 package org.terasology.customOreGen;
 
+import org.terasology.engine.utilities.random.Random;
 import org.terasology.math.geom.Vector3i;
-import org.terasology.utilities.random.Random;
 
 import java.util.List;
 
 /**
- * Code very heavily based on JRoush's implementation of CustomOreGen.
- * http://www.minecraftforum.net/topic/1107057-146v2-custom-ore-generation-updated-jan-5th/
+ * Code very heavily based on JRoush's implementation of CustomOreGen. http://www.minecraftforum
+ * .net/topic/1107057-146v2-custom-ore-generation-updated-jan-5th/
  */
 public class ClusterStructureDefinition extends AbstractMultiChunkStructureDefinition {
-    private PDist pocketYLevel;
-    private PDist clusterRichness;
+    private final PDist pocketYLevel;
+    private final PDist clusterRichness;
 
     public ClusterStructureDefinition(PDist frequency, PDist clusterRichness, PDist pocketYLevel) {
         super(frequency);
@@ -45,7 +32,8 @@ public class ClusterStructureDefinition extends AbstractMultiChunkStructureDefin
     }
 
     @Override
-    protected void generateStructuresForChunk(List<Structure> result, Random random, Vector3i chunkSize, int xShift, int yShift, int zShift) {
+    protected void generateStructuresForChunk(List<Structure> result, Random random, Vector3i chunkSize, int xShift,
+                                              int yShift, int zShift) {
         // cluster X,Y,Z coordinates within chunk
         float clX = random.nextFloat() * chunkSize.x + xShift;
         float clY = pocketYLevel.getValue(random) + yShift;
@@ -60,7 +48,7 @@ public class ClusterStructureDefinition extends AbstractMultiChunkStructureDefin
         protected final float[] ptA;    // segment start
         protected final float[] ptB;    // segment end
         protected final float[] rad;    // radius at each step along segment
-        private Vector3i chunkSize;
+        private final Vector3i chunkSize;
 
         public ClusterStructure(float x, float y, float z, Random random, Vector3i chunkSize) {
             this.chunkSize = chunkSize;
@@ -131,7 +119,8 @@ public class ClusterStructureDefinition extends AbstractMultiChunkStructureDefin
                                 continue;
                             }
 
-                            callback.replaceBlock(new Vector3i(tgtX, tgtY, tgtZ), StructureNodeType.CLUSTER, Vector3i.zero());
+                            callback.replaceBlock(new Vector3i(tgtX, tgtY, tgtZ), StructureNodeType.CLUSTER,
+                                    Vector3i.zero());
                         }
                     }
                 }

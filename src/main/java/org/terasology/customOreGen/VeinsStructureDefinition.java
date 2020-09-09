@@ -1,53 +1,42 @@
-/*
- * Copyright 2014 MovingBlocks
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2020 The Terasology Foundation
+// SPDX-License-Identifier: Apache-2.0
 package org.terasology.customOreGen;
 
+import org.terasology.engine.utilities.random.FastRandom;
+import org.terasology.engine.utilities.random.Random;
 import org.terasology.math.geom.Vector3i;
-import org.terasology.utilities.random.FastRandom;
-import org.terasology.utilities.random.Random;
 
 import java.util.List;
 
 /**
- * Code very heavily based on JRoush's implementation of CustomOreGen.
- * http://www.minecraftforum.net/topic/1107057-146v2-custom-ore-generation-updated-jan-5th/
+ * Code very heavily based on JRoush's implementation of CustomOreGen. http://www.minecraftforum
+ * .net/topic/1107057-146v2-custom-ore-generation-updated-jan-5th/
  */
 public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinition {
 
-    private PDist motherLodeRadius;
-    private PDist motherLodeYLevel;
+    private final PDist motherLodeRadius;
+    private final PDist motherLodeYLevel;
 
-    private PDist branchFrequency;
-    private PDist branchInclination;
-    private PDist branchLength;
-    private PDist branchHeightLimit;
+    private final PDist branchFrequency;
+    private final PDist branchInclination;
+    private final PDist branchLength;
+    private final PDist branchHeightLimit;
 
-    private PDist segmentForkFrequency;
-    private PDist segmentForkLengthMultiplier;
-    private PDist segmentLength;
-    private PDist segmentAngle;
-    private PDist segmentRadius;
+    private final PDist segmentForkFrequency;
+    private final PDist segmentForkLengthMultiplier;
+    private final PDist segmentLength;
+    private final PDist segmentAngle;
+    private final PDist segmentRadius;
 
-    private PDist blockDensity;
-    private PDist blockRadiusMultiplier;
+    private final PDist blockDensity;
+    private final PDist blockRadiusMultiplier;
 
     public VeinsStructureDefinition(PDist frequency,
                                     PDist motherLodeRadius, PDist motherLodeYLevel,
-                                    PDist branchFrequency, PDist branchInclination, PDist branchLength, PDist branchHeightLimit,
-                                    PDist segmentForkFrequency, PDist segmentForkLengthMultiplier, PDist segmentLength, PDist segmentAngle, PDist segmentRadius,
+                                    PDist branchFrequency, PDist branchInclination, PDist branchLength,
+                                    PDist branchHeightLimit,
+                                    PDist segmentForkFrequency, PDist segmentForkLengthMultiplier,
+                                    PDist segmentLength, PDist segmentAngle, PDist segmentRadius,
                                     PDist blockDensity, PDist blockRadiusMultiplier) {
         super(frequency);
         this.motherLodeRadius = motherLodeRadius;
@@ -76,7 +65,8 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
     }
 
     @Override
-    protected void generateStructuresForChunk(List<Structure> result, Random random, Vector3i chunkSize, int xShift, int yShift, int zShift) {
+    protected void generateStructuresForChunk(List<Structure> result, Random random, Vector3i chunkSize, int xShift,
+                                              int yShift, int zShift) {
         // motherlode X,Y,Z coordinates within chunk
         float mlX = random.nextFloat() * chunkSize.x + xShift;
         float mlY = motherLodeYLevel.getValue(random) + yShift;
@@ -87,7 +77,8 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
         mlMat.translate(mlX, mlY, mlZ); // center translation
         mlMat.rotateZ(random.nextFloat() * 6.28319F); // phi rotation
         mlMat.rotateY(random.nextFloat() * 6.28319F); // theta rotation
-        mlMat.scale(motherLodeRadius.getValue(random), motherLodeRadius.getValue(random), motherLodeRadius.getValue(random)); // scale axes
+        mlMat.scale(motherLodeRadius.getValue(random), motherLodeRadius.getValue(random),
+                motherLodeRadius.getValue(random)); // scale axes
 
         // create motherlode component
         result.add(new SolidSphereStructure(mlMat, chunkSize, random));
@@ -109,7 +100,8 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
         }
     }
 
-    public void generateBranch(List<Structure> result, float length, float maxHeight, float minHeight, Transform mat, BezierTubeStructure parent, Random random) {
+    public void generateBranch(List<Structure> result, float length, float maxHeight, float minHeight, Transform mat,
+                               BezierTubeStructure parent, Random random) {
         float[] pos = new float[3];
         float remainingLength = length;
         // create segments until max branch length is reached
@@ -153,10 +145,12 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
                 Transform fkMat = mat.clone();
                 // rotate relative to arbitrary axis in XY plane
                 float axisTheta = fkRandom.nextFloat() * 6.28319F;
-                fkMat.rotate(segmentAngle.getValue(fkRandom), (float) Math.cos(axisTheta), (float) Math.sin(axisTheta), 0);
+                fkMat.rotate(segmentAngle.getValue(fkRandom), (float) Math.cos(axisTheta),
+                        (float) Math.sin(axisTheta), 0);
                 // create forked branch
                 float fkLenMult = segmentForkLengthMultiplier.getValue(fkRandom);
-                generateBranch(result, remainingLength * (fkLenMult > 1F ? 1F : fkLenMult), maxHeight, minHeight, fkMat, tube, fkRandom);
+                generateBranch(result, remainingLength * (fkLenMult > 1F ? 1F : fkLenMult), maxHeight, minHeight,
+                        fkMat, tube, fkRandom);
             }
 
             // rotate relative to arbitrary axis in XY plane
@@ -167,19 +161,19 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
 
     private final class BezierTubeStructure implements Structure {
         // center and forward control points
-        private float[] mid;
-        private float[] end;
+        private final float[] mid;
+        private final float[] end;
         // radius
         private final float rad;
         // neighbors
-        private BezierTubeStructure prev;
-        private Random random;
-        private BezierTubeStructure next;
+        private final BezierTubeStructure prev;
+        private final Random random;
         // interpolation context & persistent transform object
         private final InterpolationContext context;
         private final Transform mat;
-        private Vector3i minPosition;
-        private Vector3i maxPosition;
+        private final Vector3i minPosition;
+        private final Vector3i maxPosition;
+        private BezierTubeStructure next;
 
         private BezierTubeStructure(BezierTubeStructure parent, Transform transform, Random random) {
             prev = parent;
@@ -222,12 +216,11 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
         }
 
         /**
-         * Parametric interpolation of tube center line.
-         * Quadratic bezier curves are used between neighboring segments.
+         * Parametric interpolation of tube center line. Quadratic bezier curves are used between neighboring segments.
          * Without a neighbor, the tube follows the straight segment line.
          *
          * @param pos set to position vector as {x,y,z}
-         * @param t   interpolating parameter between [-1,1]
+         * @param t interpolating parameter between [-1,1]
          */
         public void interpolatePosition(float[] pos, float t) {
             if (t > 0 && next != null) { // valid forward neighbor
@@ -249,11 +242,11 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
         }
 
         /**
-         * Parametric interpolation of position derivative.
-         * Without a neighbor, the tube follows the straight segment line.
+         * Parametric interpolation of position derivative. Without a neighbor, the tube follows the straight segment
+         * line.
          *
          * @param der set to derivative vector as {dx,dy,dz}
-         * @param t   interpolating parameter between [-1,1]
+         * @param t interpolating parameter between [-1,1]
          */
         public void interpolateDerivative(float[] der, float t) {
             if (t > 0 && next != null) { // valid forward neighbor
@@ -272,10 +265,9 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
         }
 
         /**
-         * Parametric interpolation of segment radius.
-         * Segment radius varies smoothly between neighboring segments.
-         * Without a neighbor, the forward half terminates in a half-ellipsoid
-         * and the backward half terminates in a cylinder of constant radius
+         * Parametric interpolation of segment radius. Segment radius varies smoothly between neighboring segments.
+         * Without a neighbor, the forward half terminates in a half-ellipsoid and the backward half terminates in a
+         * cylinder of constant radius
          *
          * @param t interpolating parameter between [-1,1]
          */
@@ -319,7 +311,8 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
                 }
                 float step = 0.7F * innerStep / context.radius;
                 int stepCount = (int) (maxR / step) + 1;
-                boolean oneBlockThreshold = (context.radius * maxR < 0.25F); // radius is too small even for a single block
+                boolean oneBlockThreshold = (context.radius * maxR < 0.25F); // radius is too small even for a single
+                // block
                 // build transformation
                 mat.identity();
                 mat.translate(context.pos[0], context.pos[1], context.pos[2]);
@@ -356,7 +349,8 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
                             for (int blockY = baseY; blockY < innerStep + baseY; blockY++) {
                                 for (int blockZ = baseZ; blockZ < innerStep + baseZ; blockZ++) {
                                     if (callback.canReplace(blockX, blockY, blockZ) && blockDensity.getIntValue(random) >= 1) {
-                                        callback.replaceBlock(new Vector3i(blockX, blockY, blockZ), StructureNodeType.BRANCH, Vector3i.zero());
+                                        callback.replaceBlock(new Vector3i(blockX, blockY, blockZ),
+                                                StructureNodeType.BRANCH, Vector3i.zero());
                                     }
                                 }
                             }
@@ -393,7 +387,7 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
             /**
              * Called before an interpolation loop to initialize all state info
              *
-             * @param stepSize           Initial step size to use.  Pass 0 to keep size from last interpolation.
+             * @param stepSize Initial step size to use.  Pass 0 to keep size from last interpolation.
              * @param calculateDirection Whether or not to compute normalized derivative at each step.
              */
             public void init(float stepSize, boolean calculateDirection) {
@@ -476,7 +470,8 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
                     }
                     // prevent infinite loops
                     if (dt < Math.ulp(t) * 2) {
-                        throw new RuntimeException("CustomOreGen: Detected a possible infinite loop during bezier interpolation.  Please report this error.");
+                        throw new RuntimeException("CustomOreGen: Detected a possible infinite loop during bezier " +
+                                "interpolation.  Please report this error.");
                     }
                 }
                 // advancement succeeded - advance actual parameter
@@ -490,10 +485,10 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
     private final class SolidSphereStructure implements Structure {
         protected final Transform mat;
         protected final Transform invMat;
-        private Vector3i minPosition;
-        private Vector3i maxPosition;
-        private Vector3i chunkSize;
-        private Random random;
+        private final Vector3i minPosition;
+        private final Vector3i maxPosition;
+        private final Vector3i chunkSize;
+        private final Random random;
 
         public SolidSphereStructure(Transform transform, Vector3i chunkSize, Random random) {
             this.chunkSize = chunkSize;
@@ -572,7 +567,8 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
                         }
 
                         Vector3i blockPosition = new Vector3i(x, y, z);
-                        callback.replaceBlock(blockPosition, StructureNodeType.CLUSTER, getRelativePosition(blockPosition, minPosition, maxPosition));
+                        callback.replaceBlock(blockPosition, StructureNodeType.CLUSTER,
+                                getRelativePosition(blockPosition, minPosition, maxPosition));
                     }
                 }
             }

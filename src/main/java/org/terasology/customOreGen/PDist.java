@@ -1,21 +1,8 @@
-/*
- * Copyright 2014 MovingBlocks
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2020 The Terasology Foundation
+// SPDX-License-Identifier: Apache-2.0
 package org.terasology.customOreGen;
 
-import org.terasology.utilities.random.Random;
+import org.terasology.engine.utilities.random.Random;
 
 /**
  * Simple Probability Distribution
@@ -30,14 +17,6 @@ public class PDist {
      * maximum deviation from the mean
      */
     public float range;
-
-    /**
-     * Enumeration of valid distribution types
-     */
-    public static enum Type {
-        uniform, normal
-    }
-
     /**
      * distribution type
      */
@@ -92,23 +71,24 @@ public class PDist {
             case uniform:
                 return (rand.nextFloat() * 2.0F - 1.0F) * range + mean;
             case normal:
-                float value = (float) rand.nextGaussian() / 2.5F; // compress to normal distribution with mean = 0, stddev = 0.4
+                float value = (float) rand.nextGaussian() / 2.5F; // compress to normal distribution with mean = 0, 
+                // stddev = 0.4
                 if (value < -1.0F) {
                     value = -1.0F; // force value within valid range (clamps most extreme 3.5% of values)
                 } else if (value > 1.0F) {
                     value = 1.0F;
                 }
-                return value * range + mean; // transform into normal distribution with requested mean & stddev = 0.4*range
+                return value * range + mean; // transform into normal distribution with requested mean & stddev = 0
+        // .4*range
             default:
                 return 0; // should *never* happen
         }
     }
 
     /**
-     * Calculate a random integer value from the distribution.
-     * Preserves the mean of the distribution, unlike naively rounding the results of getValue().
-     * However, this method can return values outside the specified range, and will increase
-     * the standard deviation.
+     * Calculate a random integer value from the distribution. Preserves the mean of the distribution, unlike naively
+     * rounding the results of getValue(). However, this method can return values outside the specified range, and will
+     * increase the standard deviation.
      *
      * @param rand java.util.Random object, appropriately seeded
      */
@@ -127,5 +107,12 @@ public class PDist {
     @Override
     public String toString() {
         return String.format("%f +- %f %s", mean, range, type.name());
+    }
+
+    /**
+     * Enumeration of valid distribution types
+     */
+    public enum Type {
+        uniform, normal
     }
 }

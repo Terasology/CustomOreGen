@@ -1,44 +1,33 @@
-/*
- * Copyright 2014 MovingBlocks
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2020 The Terasology Foundation
+// SPDX-License-Identifier: Apache-2.0
 package org.terasology.customOreGen;
 
+import org.terasology.engine.utilities.procedural.Noise3D;
+import org.terasology.engine.utilities.procedural.SimplexNoise;
+import org.terasology.engine.utilities.random.Random;
+import org.terasology.engine.world.block.Block;
 import org.terasology.math.geom.Vector3i;
-import org.terasology.utilities.procedural.Noise3D;
-import org.terasology.utilities.procedural.SimplexNoise;
-import org.terasology.utilities.random.Random;
-import org.terasology.world.block.Block;
 
 import java.util.List;
 
 /**
- * Code very heavily based on JRoush's implementation of CustomOreGen.
- * http://www.minecraftforum.net/topic/1107057-146v2-custom-ore-generation-updated-jan-5th/
+ * Code very heavily based on JRoush's implementation of CustomOreGen. http://www.minecraftforum
+ * .net/topic/1107057-146v2-custom-ore-generation-updated-jan-5th/
  */
 public class PocketStructureDefinition extends AbstractMultiChunkStructureDefinition {
-    private PDist pocketRadius;
-    private PDist pocketThickness;
-    private PDist pocketYLevel;
-    private PDist pocketAngle;
-    private PDist blockRadiusMult;
-    private PDist blockDensity;
-    private PDist noiseLevel;
-    private PDist volumeNoiseCutOff;
+    private final PDist pocketRadius;
+    private final PDist pocketThickness;
+    private final PDist pocketYLevel;
+    private final PDist pocketAngle;
+    private final PDist blockRadiusMult;
+    private final PDist blockDensity;
+    private final PDist noiseLevel;
+    private final PDist volumeNoiseCutOff;
 
-    public PocketStructureDefinition(PDist frequency, PDist pocketRadius, PDist pocketThickness, PDist pocketYLevel, PDist pocketAngle,
-                                     PDist blockRadiusMult, PDist blockDensity, PDist noiseLevel, PDist volumeNoiseCutOff) {
+    public PocketStructureDefinition(PDist frequency, PDist pocketRadius, PDist pocketThickness, PDist pocketYLevel,
+                                     PDist pocketAngle,
+                                     PDist blockRadiusMult, PDist blockDensity, PDist noiseLevel,
+                                     PDist volumeNoiseCutOff) {
         super(frequency);
         this.pocketRadius = pocketRadius;
         this.pocketThickness = pocketThickness;
@@ -60,7 +49,8 @@ public class PocketStructureDefinition extends AbstractMultiChunkStructureDefini
     }
 
     @Override
-    protected void generateStructuresForChunk(List<Structure> result, Random random, Vector3i chunkSize, int xShift, int yShift, int zShift) {
+    protected void generateStructuresForChunk(List<Structure> result, Random random, Vector3i chunkSize, int xShift,
+                                              int yShift, int zShift) {
         // cloud X,Y,Z coordinates within chunk
         float clX = random.nextFloat() * chunkSize.x + xShift;
         float clY = pocketYLevel.getValue(random) + yShift;
@@ -72,7 +62,8 @@ public class PocketStructureDefinition extends AbstractMultiChunkStructureDefini
         clMat.rotateZInto(0, 1, 0); // rotate Z axis upward
         clMat.rotateZ(random.nextFloat() * 6.28319F); // phi rotation
         clMat.rotateY(pocketAngle.getValue(random)); // theta rotation
-        clMat.scale(pocketRadius.getValue(random), pocketRadius.getValue(random), pocketThickness.getValue(random)); // scale axes
+        clMat.scale(pocketRadius.getValue(random), pocketRadius.getValue(random), pocketThickness.getValue(random));
+        // scale axes
 
         // create cloud component
         result.add(new DiffusePocketStructure(clMat, random, chunkSize));
@@ -93,10 +84,10 @@ public class PocketStructureDefinition extends AbstractMultiChunkStructureDefini
         protected final Noise3D noiseGen;
         protected final float sizeNoiseMagnitude;
         protected final int noiseLevels;
-        private Vector3i minPosition;
-        private Vector3i maxPosition;
-        private Random random;
-        private Vector3i chunkSize;
+        private final Vector3i minPosition;
+        private final Vector3i maxPosition;
+        private final Random random;
+        private final Vector3i chunkSize;
 
         public DiffusePocketStructure(Transform transform, Random random, Vector3i chunkSize) {
             this.random = random;
@@ -220,7 +211,8 @@ public class PocketStructureDefinition extends AbstractMultiChunkStructureDefini
 
                         // place block
                         Vector3i blockPosition = new Vector3i(x, y, z);
-                        callback.replaceBlock(blockPosition, StructureNodeType.POCKET, getRelativePosition(blockPosition, minPosition, maxPosition));
+                        callback.replaceBlock(blockPosition, StructureNodeType.POCKET,
+                                getRelativePosition(blockPosition, minPosition, maxPosition));
                     }
                 }
             }

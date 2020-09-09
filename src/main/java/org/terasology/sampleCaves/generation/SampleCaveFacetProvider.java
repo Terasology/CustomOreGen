@@ -6,12 +6,12 @@ import org.terasology.customOreGen.PDist;
 import org.terasology.customOreGen.Structure;
 import org.terasology.customOreGen.StructureDefinition;
 import org.terasology.customOreGen.VeinsStructureDefinition;
-import org.terasology.entitySystem.Component;
+import org.terasology.engine.entitySystem.Component;
+import org.terasology.engine.world.generation.ConfigurableFacetProvider;
+import org.terasology.engine.world.generation.FacetProvider;
+import org.terasology.engine.world.generation.GeneratingRegion;
+import org.terasology.engine.world.generation.Produces;
 import org.terasology.nui.properties.Range;
-import org.terasology.world.generation.ConfigurableFacetProvider;
-import org.terasology.world.generation.FacetProvider;
-import org.terasology.world.generation.GeneratingRegion;
-import org.terasology.world.generation.Produces;
 
 import java.util.Collection;
 
@@ -27,7 +27,8 @@ public class SampleCaveFacetProvider implements ConfigurableFacetProvider, Facet
 
     @Override
     public void process(GeneratingRegion region) {
-        SampleCaveFacet facet = new SampleCaveFacet(region.getRegion(), region.getBorderForFacet(SampleCaveFacet.class));
+        SampleCaveFacet facet = new SampleCaveFacet(region.getRegion(),
+                region.getBorderForFacet(SampleCaveFacet.class));
 
         /* AnotherWorld
         PDist caveFrequency = new PDist(0.1f, 0f);
