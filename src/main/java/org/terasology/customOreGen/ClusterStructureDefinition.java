@@ -15,7 +15,8 @@
  */
 package org.terasology.customOreGen;
 
-import org.terasology.math.geom.Vector3i;
+import org.joml.Vector3i;
+import org.joml.Vector3ic;
 import org.terasology.utilities.random.Random;
 
 import java.util.List;
@@ -45,11 +46,11 @@ public class ClusterStructureDefinition extends AbstractMultiChunkStructureDefin
     }
 
     @Override
-    protected void generateStructuresForChunk(List<Structure> result, Random random, Vector3i chunkSize, int xShift, int yShift, int zShift) {
+    protected void generateStructuresForChunk(List<Structure> result, Random random, Vector3ic chunkSize, int xShift, int yShift, int zShift) {
         // cluster X,Y,Z coordinates within chunk
-        float clX = random.nextFloat() * chunkSize.x + xShift;
+        float clX = random.nextFloat() * chunkSize.x() + xShift;
         float clY = pocketYLevel.getValue(random) + yShift;
-        float clZ = random.nextFloat() * chunkSize.z + zShift;
+        float clZ = random.nextFloat() * chunkSize.z() + zShift;
 
         result.add(new ClusterStructure(clX, clY, clZ, random, chunkSize));
     }
@@ -60,9 +61,9 @@ public class ClusterStructureDefinition extends AbstractMultiChunkStructureDefin
         protected final float[] ptA;    // segment start
         protected final float[] ptB;    // segment end
         protected final float[] rad;    // radius at each step along segment
-        private Vector3i chunkSize;
+        private Vector3ic chunkSize;
 
-        public ClusterStructure(float x, float y, float z, Random random, Vector3i chunkSize) {
+        public ClusterStructure(float x, float y, float z, Random random, Vector3ic chunkSize) {
             this.chunkSize = chunkSize;
             // choose segment length and horizontal angle from +Z axis
             size = clusterRichness.getIntValue(random);
@@ -99,6 +100,10 @@ public class ClusterStructureDefinition extends AbstractMultiChunkStructureDefin
 
         @Override
         public void generateStructure(StructureCallback callback) {
+
+
+            Vector3i center = new Vector3i();
+            Vector3i blockLoc = new Vector3i();
             // iterate along segment in unit steps
             for (int s = 0; s < rad.length; s++) {
                 float ns = s / (float) (rad.length - 1);
@@ -110,11 +115,11 @@ public class ClusterStructureDefinition extends AbstractMultiChunkStructureDefin
 
                 // iterate over each block in the bounding box of the sphere
                 int xMin = (int) Math.max(0, Math.floor(xCenter - rad[s]));
-                int xMax = (int) Math.min(chunkSize.x - 1, Math.ceil(xCenter + rad[s]));
+                int xMax = (int) Math.min(chunkSize.x() - 1, Math.ceil(xCenter + rad[s]));
                 int yMin = (int) Math.max(0, Math.floor(yCenter - rad[s]));
-                int yMax = (int) Math.min(chunkSize.y - 1, Math.ceil(yCenter + rad[s]));
+                int yMax = (int) Math.min(chunkSize.y() - 1, Math.ceil(yCenter + rad[s]));
                 int zMin = (int) Math.max(0, Math.floor(zCenter - rad[s]));
-                int zMax = (int) Math.min(chunkSize.z - 1, Math.ceil(zCenter + rad[s]));
+                int zMax = (int) Math.min(chunkSize.z() - 1, Math.ceil(zCenter + rad[s]));
                 for (int tgtX = xMin; tgtX <= xMax; tgtX++) {
                     double normXDist = (tgtX + 0.5D - xCenter) / rad[s];
                     if (normXDist * normXDist >= 1.0D) {
@@ -131,7 +136,7 @@ public class ClusterStructureDefinition extends AbstractMultiChunkStructureDefin
                                 continue;
                             }
 
-                            callback.replaceBlock(new Vector3i(tgtX, tgtY, tgtZ), StructureNodeType.CLUSTER, Vector3i.zero());
+                            callback.replaceBlock(blockLoc.set(tgtX, tgtY, tgtZ), StructureNodeType.CLUSTER, center);
                         }
                     }
                 }

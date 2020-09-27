@@ -15,7 +15,7 @@
  */
 package org.terasology.customOreGen;
 
-import org.terasology.math.geom.Vector3i;
+import org.joml.Vector3ic;
 
 public interface Structure {
     void generateStructure(StructureCallback callback);
@@ -24,7 +24,7 @@ public interface Structure {
         /**
          * Relative position
          */
-        void replaceBlock(Vector3i position, StructureNodeType structureNodeType, Vector3i distanceToCenter);
+        void replaceBlock(Vector3ic position, StructureNodeType structureNodeType, Vector3ic distanceToCenter);
 
         /**
          * Relative position

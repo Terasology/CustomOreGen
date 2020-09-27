@@ -16,9 +16,10 @@
 package org.terasology.customOreGen;
 
 import org.terasology.math.Region3i;
+import org.terasology.world.block.BlockRegion;
 
 import java.util.Collection;
 
 public interface StructureDefinition {
-    Collection<Structure> generateStructures(long seed, Region3i worldRegion);
+    Collection<Structure> generateStructures(long seed, BlockRegion worldRegion);
 }

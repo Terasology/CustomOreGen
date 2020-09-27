@@ -15,7 +15,10 @@
  */
 package org.terasology.customOreGen;
 
-import org.terasology.math.geom.Vector3i;
+import org.joml.Math;
+import org.joml.RoundingMode;
+import org.joml.Vector3i;
+import org.joml.Vector3ic;
 import org.terasology.utilities.random.FastRandom;
 import org.terasology.utilities.random.Random;
 
@@ -76,11 +79,11 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
     }
 
     @Override
-    protected void generateStructuresForChunk(List<Structure> result, Random random, Vector3i chunkSize, int xShift, int yShift, int zShift) {
+    protected void generateStructuresForChunk(List<Structure> result, Random random, Vector3ic chunkSize, int xShift, int yShift, int zShift) {
         // motherlode X,Y,Z coordinates within chunk
-        float mlX = random.nextFloat() * chunkSize.x + xShift;
+        float mlX = random.nextFloat() * chunkSize.x() + xShift;
         float mlY = motherLodeYLevel.getValue(random) + yShift;
-        float mlZ = random.nextFloat() * chunkSize.z + zShift;
+        float mlZ = random.nextFloat() * chunkSize.z() + zShift;
 
         // motherlode transformation matrix
         Transform mlMat = new Transform();
@@ -208,13 +211,15 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
             float minY = Math.min(bb[1], bb[4]);
             float minZ = Math.min(bb[2], bb[5]);
 
-            minPosition = new Vector3i(minX, minY, minZ);
+            minPosition = new Vector3i(Math.roundUsing(minX, RoundingMode.FLOOR), Math.roundUsing(minY,
+                RoundingMode.FLOOR), Math.roundUsing(minZ, RoundingMode.FLOOR));
 
             float maxX = Math.max(bb[0], bb[3]);
             float maxY = Math.max(bb[1], bb[4]);
             float maxZ = Math.max(bb[2], bb[5]);
 
-            maxPosition = new Vector3i(maxX + 1, maxY + 1, maxZ + 1);
+            maxPosition = new Vector3i(Math.roundUsing(maxX + 1, RoundingMode.FLOOR), Math.roundUsing(maxY + 1,
+                RoundingMode.FLOOR), Math.roundUsing(maxZ + 1, RoundingMode.FLOOR));
 
             // construct a persistent context for interpolation loops
             context = new InterpolationContext();
@@ -326,6 +331,8 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
                 mat.rotateZInto(context.der[0], context.der[1], context.der[2]);
                 mat.scale(context.radius, context.radius, innerStep);
 
+                Vector3i blockPos = new Vector3i();
+                Vector3i blockCenter = new Vector3i();
                 // iterate through blocks in the local XY plane
                 for (int x = -stepCount; x < stepCount; x++) {
                     for (int y = -stepCount; y < stepCount; y++) {
@@ -356,7 +363,7 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
                             for (int blockY = baseY; blockY < innerStep + baseY; blockY++) {
                                 for (int blockZ = baseZ; blockZ < innerStep + baseZ; blockZ++) {
                                     if (callback.canReplace(blockX, blockY, blockZ) && blockDensity.getIntValue(random) >= 1) {
-                                        callback.replaceBlock(new Vector3i(blockX, blockY, blockZ), StructureNodeType.BRANCH, Vector3i.zero());
+                                        callback.replaceBlock(blockPos.set(blockX, blockY, blockZ), StructureNodeType.BRANCH, blockCenter);
                                     }
                                 }
                             }
@@ -475,7 +482,7 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
                         break; // error was acceptable
                     }
                     // prevent infinite loops
-                    if (dt < Math.ulp(t) * 2) {
+                    if (dt < java.lang.Math.ulp(t) * 2) {
                         throw new RuntimeException("CustomOreGen: Detected a possible infinite loop during bezier interpolation.  Please report this error.");
                     }
                 }
@@ -492,10 +499,10 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
         protected final Transform invMat;
         private Vector3i minPosition;
         private Vector3i maxPosition;
-        private Vector3i chunkSize;
+        private Vector3ic chunkSize;
         private Random random;
 
-        public SolidSphereStructure(Transform transform, Vector3i chunkSize, Random random) {
+        public SolidSphereStructure(Transform transform, Vector3ic chunkSize, Random random) {
             this.chunkSize = chunkSize;
             this.random = random;
             // build transformed bounding box from the local BB for a unit sphere
@@ -509,13 +516,13 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
             float minY = Math.min(bb[1], bb[4]);
             float minZ = Math.min(bb[2], bb[5]);
 
-            minPosition = new Vector3i(minX, minY, minZ);
+            minPosition = new Vector3i(Math.roundUsing(minX, RoundingMode.FLOOR), Math.roundUsing(minY, RoundingMode.FLOOR), Math.roundUsing(minZ, RoundingMode.FLOOR));
 
             float maxX = Math.max(bb[0], bb[3]);
             float maxY = Math.max(bb[1], bb[4]);
             float maxZ = Math.max(bb[2], bb[5]);
 
-            maxPosition = new Vector3i(maxX + 1, maxY + 1, maxZ + 1);
+            maxPosition = new Vector3i(Math.roundUsing(maxX + 1, RoundingMode.FLOOR), Math.roundUsing(maxY + 1, RoundingMode.FLOOR), Math.roundUsing(maxZ + 1, RoundingMode.FLOOR));
 
             // store transforms
             mat = transform.clone();
@@ -544,9 +551,9 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
             minR2 *= minR2;
             // iterate through blocks
             float[] pos = new float[3];
-            for (int x = Math.max(0, minPosition.x); x <= Math.min(chunkSize.x - 1, maxPosition.x); x++) {
-                for (int y = Math.max(0, minPosition.y); y <= Math.min(chunkSize.y - 1, maxPosition.y); y++) {
-                    for (int z = Math.max(0, minPosition.z); z <= Math.min(chunkSize.z - 1, maxPosition.z); z++) {
+            for (int x = Math.max(0, minPosition.x); x <= Math.min(chunkSize.x() - 1, maxPosition.x); x++) {
+                for (int y = Math.max(0, minPosition.y); y <= Math.min(chunkSize.y() - 1, maxPosition.y); y++) {
+                    for (int z = Math.max(0, minPosition.z); z <= Math.min(chunkSize.z() - 1, maxPosition.z); z++) {
                         if (!callback.canReplace(x, y, z)) {
                             continue;
                         }
