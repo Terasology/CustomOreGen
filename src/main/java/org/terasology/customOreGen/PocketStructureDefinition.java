@@ -15,7 +15,10 @@
  */
 package org.terasology.customOreGen;
 
-import org.terasology.math.geom.Vector3i;
+import org.joml.Math;
+import org.joml.RoundingMode;
+import org.joml.Vector3i;
+import org.joml.Vector3ic;
 import org.terasology.utilities.procedural.Noise3D;
 import org.terasology.utilities.procedural.SimplexNoise;
 import org.terasology.utilities.random.Random;
@@ -60,11 +63,11 @@ public class PocketStructureDefinition extends AbstractMultiChunkStructureDefini
     }
 
     @Override
-    protected void generateStructuresForChunk(List<Structure> result, Random random, Vector3i chunkSize, int xShift, int yShift, int zShift) {
+    protected void generateStructuresForChunk(List<Structure> result, Random random, Vector3ic chunkSize, int xShift, int yShift, int zShift) {
         // cloud X,Y,Z coordinates within chunk
-        float clX = random.nextFloat() * chunkSize.x + xShift;
+        float clX = random.nextFloat() * chunkSize.x() + xShift;
         float clY = pocketYLevel.getValue(random) + yShift;
-        float clZ = random.nextFloat() * chunkSize.z + zShift;
+        float clZ = random.nextFloat() * chunkSize.z() + zShift;
 
         // cloud transformation matrix
         Transform clMat = new Transform();
@@ -93,12 +96,12 @@ public class PocketStructureDefinition extends AbstractMultiChunkStructureDefini
         protected final Noise3D noiseGen;
         protected final float sizeNoiseMagnitude;
         protected final int noiseLevels;
-        private Vector3i minPosition;
-        private Vector3i maxPosition;
+        private Vector3ic minPosition;
+        private Vector3ic maxPosition;
         private Random random;
-        private Vector3i chunkSize;
+        private Vector3ic chunkSize;
 
-        public DiffusePocketStructure(Transform transform, Random random, Vector3i chunkSize) {
+        public DiffusePocketStructure(Transform transform, Random random, Vector3ic chunkSize) {
             this.random = random;
             this.chunkSize = chunkSize;
             // create noise generator
@@ -117,17 +120,17 @@ public class PocketStructureDefinition extends AbstractMultiChunkStructureDefini
             float minY = Math.min(bb[1], bb[4]);
             float minZ = Math.min(bb[2], bb[5]);
 
-            minPosition = new Vector3i(minX, minY, minZ);
+            minPosition = new Vector3i(Math.roundUsing(minX, RoundingMode.FLOOR), Math.roundUsing(minY, RoundingMode.FLOOR), Math.roundUsing(minZ, RoundingMode.FLOOR));
 
             float maxX = Math.max(bb[0], bb[3]);
             float maxY = Math.max(bb[1], bb[4]);
             float maxZ = Math.max(bb[2], bb[5]);
 
-            maxPosition = new Vector3i(maxX + 1, maxY + 1, maxZ + 1);
+            maxPosition = new Vector3i(Math.roundUsing(maxX + 1, RoundingMode.FLOOR), Math.roundUsing(maxY + 1, RoundingMode.FLOOR), Math.roundUsing(maxZ + 1, RoundingMode.FLOOR));
 
             // calculate noise levels from size of BB
             float maxSize = Math.max(maxX - minX, Math.max(maxY - minY, maxZ - minZ)) * 0.2F;
-            noiseLevels = (maxSize <= 1) ? 0 : (int) (Math.log(maxSize) / Math.log(2) + 0.5F);
+            noiseLevels = (maxSize <= 1) ? 0 : (int) (java.lang.Math.log(maxSize) / java.lang.Math.log(2) + 0.5F);
 
             // store transforms
             mat = transform.clone();
@@ -165,9 +168,9 @@ public class PocketStructureDefinition extends AbstractMultiChunkStructureDefini
             minNoisyR2 *= minNoisyR2;
             // iterate through blocks
             float[] pos = new float[3];
-            for (int x = Math.max(0, minPosition.x); x <= Math.min(chunkSize.x - 1, maxPosition.x); x++) {
-                for (int y = Math.max(0, minPosition.y); y <= Math.min(chunkSize.y - 1, maxPosition.y); y++) {
-                    for (int z = Math.max(0, minPosition.z); z <= Math.min(chunkSize.z - 1, maxPosition.z); z++) {
+            for (int x = Math.max(0, minPosition.x()); x <= Math.min(chunkSize.x() - 1, maxPosition.x()); x++) {
+                for (int y = Math.max(0, minPosition.y()); y <= Math.min(chunkSize.y() - 1, maxPosition.y()); y++) {
+                    for (int z = Math.max(0, minPosition.z()); z <= Math.min(chunkSize.z() - 1, maxPosition.z()); z++) {
                         if (!callback.canReplace(x, y, z)) {
                             continue;
                         }

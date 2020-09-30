@@ -15,9 +15,10 @@
  */
 package org.terasology.sampleCaves.generation;
 
+import org.joml.Vector3ic;
 import org.terasology.customOreGen.Structure;
 import org.terasology.customOreGen.StructureNodeType;
-import org.terasology.math.geom.Vector3i;
+import org.terasology.math.JomlUtil;
 import org.terasology.world.generation.facets.base.BaseBooleanFieldFacet3D;
 
 public class SampleCaveStructureCallback implements Structure.StructureCallback {
@@ -33,9 +34,9 @@ public class SampleCaveStructureCallback implements Structure.StructureCallback 
     }
 
     @Override
-    public void replaceBlock(Vector3i position, StructureNodeType structureNodeType, Vector3i distanceToCenter) {
-        if (canReplace(position.x, position.y, position.z)) {
-            facet.set(position, true);
+    public void replaceBlock(Vector3ic position, StructureNodeType structureNodeType, Vector3ic distanceToCenter) {
+        if (canReplace(position.x(), position.y(), position.z())) {
+            facet.set(JomlUtil.from(position), true);
         }
     }
 }

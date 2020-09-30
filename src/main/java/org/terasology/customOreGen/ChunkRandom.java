@@ -15,12 +15,12 @@
  */
 package org.terasology.customOreGen;
 
-import org.terasology.math.geom.Vector3i;
+import org.joml.Vector3ic;
 import org.terasology.utilities.random.FastRandom;
 import org.terasology.utilities.random.Random;
 
-public abstract class ChunkRandom {
-    public static Random getChunkRandom(long seed, Vector3i location, int salt) {
-        return new FastRandom(seed + salt * (97 * location.x + location.y + location.z));
+public final class ChunkRandom {
+    public static Random getChunkRandom(long seed, Vector3ic location, int salt) {
+        return new FastRandom(seed + salt * (97 * location.x() + location.y() + location.z()));
     }
 }
