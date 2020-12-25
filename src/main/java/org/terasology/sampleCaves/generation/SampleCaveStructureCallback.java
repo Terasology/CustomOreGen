@@ -30,7 +30,7 @@ public class SampleCaveStructureCallback implements Structure.StructureCallback 
 
     @Override
     public boolean canReplace(int x, int y, int z) {
-        return facet.getRelativeRegion().containsBlock(x, y, z);
+        return facet.getRelativeRegion().contains(x, y, z);
     }
 
     @Override
