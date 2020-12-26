@@ -50,7 +50,7 @@ public class SampleCaveFacetProvider implements ConfigurableFacetProvider, Facet
                 new PDist(100f, 0f), new PDist(0f, 0f), new PDist(0.25f, 0f), new PDist(5f, 0f), new PDist(0.5f, 0.5f),
                 tunnelRadius, new PDist(1f, 0f), new PDist(1f, 0f));
 
-        Collection<Structure> structures = structureDefinition.generateStructures(seed, JomlUtil.from(region.getRegion()));
+        Collection<Structure> structures = structureDefinition.generateStructures(seed, region.getRegion());
 
         for (Structure structure : structures) {
             structure.generateStructure(new SampleCaveStructureCallback(facet));
