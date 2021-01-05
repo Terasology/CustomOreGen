@@ -30,13 +30,13 @@ public class SampleCaveStructureCallback implements Structure.StructureCallback 
 
     @Override
     public boolean canReplace(int x, int y, int z) {
-        return facet.getRelativeRegion().encompasses(x, y, z);
+        return facet.getRelativeRegion().contains(x, y, z);
     }
 
     @Override
     public void replaceBlock(Vector3ic position, StructureNodeType structureNodeType, Vector3ic distanceToCenter) {
         if (canReplace(position.x(), position.y(), position.z())) {
-            facet.set(JomlUtil.from(position), true);
+            facet.set(position, true);
         }
     }
 }
