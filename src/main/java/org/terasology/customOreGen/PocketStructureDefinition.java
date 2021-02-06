@@ -21,6 +21,7 @@ import org.joml.RoundingMode;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
 import org.joml.Vector3ic;
+import org.joml.Vector4f;
 import org.terasology.utilities.procedural.Noise3D;
 import org.terasology.utilities.procedural.SimplexNoise;
 import org.terasology.utilities.random.Random;
@@ -117,28 +118,19 @@ public class PocketStructureDefinition extends AbstractMultiChunkStructureDefini
             }
             Vector3f min = new Vector3f();
             Vector3f max = new Vector3f();
-            transform.frustumAabb(min, max);
+            transform.scale(rMax).frustumAabb(min, max);
 
-            float minX = Math.min(min.x, max.x);
-            float minY = Math.min(min.y, max.y);
-            float minZ = Math.min(min.z, max.z);
-
-            minPosition = new Vector3i(Math.roundUsing(minX, RoundingMode.FLOOR), Math.roundUsing(minY, RoundingMode.FLOOR), Math.roundUsing(minZ, RoundingMode.FLOOR));
-
-            float maxX = Math.max(min.x, max.x);
-            float maxY = Math.max(min.y, max.y);
-            float maxZ = Math.max(min.z, max.z);
-
-            maxPosition = new Vector3i(Math.roundUsing(maxX + 1, RoundingMode.FLOOR), Math.roundUsing(maxY + 1, RoundingMode.FLOOR), Math.roundUsing(maxZ + 1, RoundingMode.FLOOR));
+            minPosition = new Vector3i(Math.roundUsing(min.x, RoundingMode.FLOOR), Math.roundUsing(min.y, RoundingMode.FLOOR), Math.roundUsing(min.z, RoundingMode.FLOOR));
+            maxPosition = new Vector3i(Math.roundUsing(max.x + 1, RoundingMode.FLOOR), Math.roundUsing(max.y + 1, RoundingMode.FLOOR), Math.roundUsing(max.z + 1, RoundingMode.FLOOR));
 
             // calculate noise levels from size of BB
-            float maxSize = Math.max(maxX - minX, Math.max(maxY - minY, maxZ - minZ)) * 0.2F;
+            float maxSize = Math.max(max.x - min.x, Math.max(max.y - min.y, max.z - min.z)) * 0.2F;
             noiseLevels = (maxSize <= 1) ? 0 : (int) (java.lang.Math.log(maxSize) / java.lang.Math.log(2) + 0.5F);
 
             // store transforms
             mat = new Matrix4f(transform);
             if (transform.determinant() != 0) {
-                invMat = transform.invert(new Matrix4f());  // note - this alters the transform argument
+                invMat = transform.invert(new Matrix4f());
             } else {
                 invMat = null; // at least one axis of sphere has zero length
             }
@@ -170,7 +162,7 @@ public class PocketStructureDefinition extends AbstractMultiChunkStructureDefini
             maxNoisyR2 *= maxNoisyR2;
             minNoisyR2 *= minNoisyR2;
             // iterate through blocks
-            Vector3f pos = new Vector3f();
+            Vector4f pos = new Vector4f();
             for (int x = Math.max(0, minPosition.x()); x <= Math.min(chunkSize.x() - 1, maxPosition.x()); x++) {
                 for (int y = Math.max(0, minPosition.y()); y <= Math.min(chunkSize.y() - 1, maxPosition.y()); y++) {
                     for (int z = Math.max(0, minPosition.z()); z <= Math.min(chunkSize.z() - 1, maxPosition.z()); z++) {
@@ -182,7 +174,7 @@ public class PocketStructureDefinition extends AbstractMultiChunkStructureDefini
                         pos.x = x + 0.5F;
                         pos.y = y + 0.5F;
                         pos.z = z + 0.5F;
-                        invMat.transformDirection(pos);
+                        invMat.transform(pos);
                         // check radius
                         float r2 = pos.lengthSquared();
                         if (r2 > maxNoisyR2) {
