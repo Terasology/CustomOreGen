@@ -1,26 +1,13 @@
-/*
- * Copyright 2015 MovingBlocks
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2021 The Terasology Foundation
+// SPDX-License-Identifier: Apache-2.0
 package org.terasology.customOreGen;
 
 import org.joml.Vector3f;
 import org.joml.Vector3i;
 import org.joml.Vector3ic;
-import org.terasology.math.ChunkMath;
 import org.terasology.utilities.random.Random;
 import org.terasology.world.block.BlockRegion;
+import org.terasology.world.chunks.Chunks;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -36,7 +23,7 @@ public abstract class AbstractMultiChunkStructureDefinition implements Structure
     @Override
     public final Collection<Structure> generateStructures(long seed, BlockRegion worldRegion) {
         List<Structure> result = new LinkedList<>();
-        Vector3i chunkPosition = ChunkMath.calcChunkPos(worldRegion.center(new Vector3f()), new Vector3i());
+        Vector3i chunkPosition = Chunks.toChunkPos(worldRegion.center(new Vector3f()), new Vector3i());
         float maxRange = getMaxRange();
         Vector3i chunkSize = worldRegion.getSize(new Vector3i());
 

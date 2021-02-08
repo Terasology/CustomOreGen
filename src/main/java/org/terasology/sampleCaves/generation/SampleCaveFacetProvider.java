@@ -7,7 +7,6 @@ import org.terasology.customOreGen.Structure;
 import org.terasology.customOreGen.StructureDefinition;
 import org.terasology.customOreGen.VeinsStructureDefinition;
 import org.terasology.entitySystem.Component;
-import org.terasology.math.JomlUtil;
 import org.terasology.nui.properties.Range;
 import org.terasology.world.generation.ConfigurableFacetProvider;
 import org.terasology.world.generation.FacetProvider;
