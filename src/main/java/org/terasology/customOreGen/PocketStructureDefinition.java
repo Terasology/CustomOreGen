@@ -22,6 +22,7 @@ import org.joml.Vector3f;
 import org.joml.Vector3i;
 import org.joml.Vector3ic;
 import org.joml.Vector4f;
+import org.terasology.joml.geom.AABBf;
 import org.terasology.utilities.procedural.Noise3D;
 import org.terasology.utilities.procedural.SimplexNoise;
 import org.terasology.utilities.random.Random;
@@ -116,9 +117,12 @@ public class PocketStructureDefinition extends AbstractMultiChunkStructureDefini
             if (rMax < 0) {
                 rMax = 0;
             }
-            Vector3f min = new Vector3f();
-            Vector3f max = new Vector3f();
-            transform.scale(rMax).frustumAabb(min, max);
+
+            AABBf aabb = new AABBf(-rMax, -rMax, -rMax, rMax, rMax, rMax);
+            aabb.transform(transform);
+
+            Vector3f min = new Vector3f(aabb.minX, aabb.minY, aabb.minZ);
+            Vector3f max = new Vector3f(aabb.maxX, aabb.maxY, aabb.maxZ);
 
             minPosition = new Vector3i(Math.roundUsing(min.x, RoundingMode.FLOOR), Math.roundUsing(min.y, RoundingMode.FLOOR), Math.roundUsing(min.z, RoundingMode.FLOOR));
             maxPosition = new Vector3i(Math.roundUsing(max.x + 1, RoundingMode.FLOOR), Math.roundUsing(max.y + 1, RoundingMode.FLOOR), Math.roundUsing(max.z + 1, RoundingMode.FLOOR));
