@@ -167,9 +167,9 @@ public class PocketStructureDefinition extends AbstractMultiChunkStructureDefini
             minNoisyR2 *= minNoisyR2;
             // iterate through blocks
             Vector4f pos = new Vector4f();
-            for (int x = Math.max(0, minPosition.x()); x <= Math.min(chunkSize.x() - 1, maxPosition.x()); x++) {
-                for (int y = Math.max(0, minPosition.y()); y <= Math.min(chunkSize.y() - 1, maxPosition.y()); y++) {
-                    for (int z = Math.max(0, minPosition.z()); z <= Math.min(chunkSize.z() - 1, maxPosition.z()); z++) {
+            for (int x =  minPosition.x(); x <=  maxPosition.x(); x++) {
+                for (int y =  minPosition.y(); y <= maxPosition.y(); y++) {
+                    for (int z = minPosition.z(); z <= maxPosition.z(); z++) {
                         if (!callback.canReplace(x, y, z)) {
                             continue;
                         }
@@ -178,7 +178,10 @@ public class PocketStructureDefinition extends AbstractMultiChunkStructureDefini
                         pos.x = x + 0.5F;
                         pos.y = y + 0.5F;
                         pos.z = z + 0.5F;
+                        pos.w = 1.0f;
                         invMat.transform(pos);
+                        pos.w = 0.0f;
+
                         // check radius
                         float r2 = pos.lengthSquared();
                         if (r2 > maxNoisyR2) {
