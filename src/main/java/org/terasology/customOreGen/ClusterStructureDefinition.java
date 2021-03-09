@@ -17,7 +17,7 @@ package org.terasology.customOreGen;
 
 import org.joml.Vector3i;
 import org.joml.Vector3ic;
-import org.terasology.utilities.random.Random;
+import org.terasology.engine.utilities.random.Random;
 
 import java.util.List;
 

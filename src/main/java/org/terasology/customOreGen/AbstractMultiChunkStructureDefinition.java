@@ -5,9 +5,9 @@ package org.terasology.customOreGen;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
 import org.joml.Vector3ic;
-import org.terasology.utilities.random.Random;
-import org.terasology.world.block.BlockRegion;
-import org.terasology.world.chunks.Chunks;
+import org.terasology.engine.utilities.random.Random;
+import org.terasology.engine.world.block.BlockRegion;
+import org.terasology.engine.world.chunks.Chunks;
 
 import java.util.Collection;
 import java.util.LinkedList;

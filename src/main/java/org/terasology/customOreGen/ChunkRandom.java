@@ -16,8 +16,8 @@
 package org.terasology.customOreGen;
 
 import org.joml.Vector3ic;
-import org.terasology.utilities.random.FastRandom;
-import org.terasology.utilities.random.Random;
+import org.terasology.engine.utilities.random.FastRandom;
+import org.terasology.engine.utilities.random.Random;
 
 public final class ChunkRandom {
     public static Random getChunkRandom(long seed, Vector3ic location, int salt) {

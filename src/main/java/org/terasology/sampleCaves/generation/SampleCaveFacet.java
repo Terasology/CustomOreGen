@@ -15,9 +15,9 @@
  */
 package org.terasology.sampleCaves.generation;
 
-import org.terasology.world.block.BlockRegion;
-import org.terasology.world.generation.Border3D;
-import org.terasology.world.generation.facets.base.BaseBooleanFieldFacet3D;
+import org.terasology.engine.world.block.BlockRegion;
+import org.terasology.engine.world.generation.Border3D;
+import org.terasology.engine.world.generation.facets.base.BaseBooleanFieldFacet3D;
 
 public class SampleCaveFacet extends BaseBooleanFieldFacet3D {
     public SampleCaveFacet(BlockRegion targetRegion, Border3D border) {

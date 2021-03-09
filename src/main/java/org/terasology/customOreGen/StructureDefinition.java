@@ -15,7 +15,7 @@
  */
 package org.terasology.customOreGen;
 
-import org.terasology.world.block.BlockRegion;
+import org.terasology.engine.world.block.BlockRegion;
 
 import java.util.Collection;
 

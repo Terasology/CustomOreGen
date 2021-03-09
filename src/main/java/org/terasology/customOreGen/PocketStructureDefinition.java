@@ -22,11 +22,11 @@ import org.joml.Vector3f;
 import org.joml.Vector3i;
 import org.joml.Vector3ic;
 import org.joml.Vector4f;
+import org.terasology.engine.utilities.procedural.Noise3D;
+import org.terasology.engine.utilities.procedural.SimplexNoise;
+import org.terasology.engine.utilities.random.Random;
+import org.terasology.engine.world.block.Block;
 import org.terasology.joml.geom.AABBf;
-import org.terasology.utilities.procedural.Noise3D;
-import org.terasology.utilities.procedural.SimplexNoise;
-import org.terasology.utilities.random.Random;
-import org.terasology.world.block.Block;
 
 import java.util.List;
 
