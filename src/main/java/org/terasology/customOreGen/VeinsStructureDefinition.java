@@ -16,11 +16,14 @@
 package org.terasology.customOreGen;
 
 import org.joml.Math;
+import org.joml.Matrix4f;
 import org.joml.RoundingMode;
 import org.joml.Vector3i;
 import org.joml.Vector3ic;
+import org.joml.Vector4f;
 import org.terasology.engine.utilities.random.FastRandom;
 import org.terasology.engine.utilities.random.Random;
+import org.terasology.joml.geom.AABBf;
 
 import java.util.List;
 
@@ -86,7 +89,7 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
         float mlZ = random.nextFloat() * chunkSize.z() + zShift;
 
         // motherlode transformation matrix
-        Transform mlMat = new Transform();
+        Matrix4f mlMat = new Matrix4f();
         mlMat.translate(mlX, mlY, mlZ); // center translation
         mlMat.rotateZ(random.nextFloat() * 6.28319F); // phi rotation
         mlMat.rotateY(random.nextFloat() * 6.28319F); // theta rotation
@@ -100,7 +103,7 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
             // generate an independent random for this branch
             Random brRandom = new FastRandom(random.nextLong());
             // initialize branch transform
-            Transform segMat = new Transform();
+            Matrix4f segMat = new Matrix4f();
             segMat.translate(mlX, mlY, mlZ);  // motherlode translation
             segMat.rotateY(brRandom.nextFloat() * 6.28319F); // random rotation about vertical
             segMat.rotateX(-branchInclination.getValue(brRandom)); // angle from horizontal
@@ -112,8 +115,8 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
         }
     }
 
-    public void generateBranch(List<Structure> result, float length, float maxHeight, float minHeight, Transform mat, BezierTubeStructure parent, Random random) {
-        float[] pos = new float[3];
+    public void generateBranch(List<Structure> result, float length, float maxHeight, float minHeight, Matrix4f mat, BezierTubeStructure parent, Random random) {
+        Vector4f pos = new Vector4f(0,0,0,0);
         float remainingLength = length;
         // create segments until max branch length is reached
         while (remainingLength > 0) {
@@ -130,20 +133,18 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
             mat.translate(0, 0, segLen);
 
             // create segment component
-            Transform segMat = mat.clone().scale(segRad, segRad, segLen);
+            Matrix4f segMat = new Matrix4f(mat).scale(segRad, segRad, segLen);
             BezierTubeStructure tube = new BezierTubeStructure(parent, segMat, random);
             result.add(tube);
 
             // translate to end point
             mat.translate(0, 0, segLen);
             // calculate end point
-            pos[0] = 0;
-            pos[1] = 0;
-            pos[2] = 0;
-            mat.transformVector(pos);
+            pos.set(0,0,0,1);
+            mat.transform(pos);
 
             // validate coordinates for next segment
-            if (pos[1] > maxHeight || pos[1] < minHeight) {
+            if (pos.y > maxHeight || pos.y < minHeight) {
                 return;    // branch extends outside of vertical range
             } else if (remainingLength <= 0) {
                 return; // remaining length is  <= 0
@@ -153,7 +154,7 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
             for (int fk = segmentForkFrequency.getIntValue(random); fk > 0; fk--) {
                 // generate an independent random and transform for this fork
                 Random fkRandom = new FastRandom(random.nextLong());
-                Transform fkMat = mat.clone();
+                Matrix4f fkMat = new Matrix4f(mat);
                 // rotate relative to arbitrary axis in XY plane
                 float axisTheta = fkRandom.nextFloat() * 6.28319F;
                 fkMat.rotate(segmentAngle.getValue(fkRandom), (float) Math.cos(axisTheta), (float) Math.sin(axisTheta), 0);
@@ -170,8 +171,8 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
 
     private final class BezierTubeStructure implements Structure {
         // center and forward control points
-        private float[] mid;
-        private float[] end;
+        private Vector4f mid = new Vector4f(0f,0f,0f, 1.0f);
+        private Vector4f end = new Vector4f(0f,0f,1f, 1.0f);
         // radius
         private final float rad;
         // neighbors
@@ -180,50 +181,45 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
         private BezierTubeStructure next;
         // interpolation context & persistent transform object
         private final InterpolationContext context;
-        private final Transform mat;
+        private final Matrix4f mat;
         private Vector3i minPosition;
         private Vector3i maxPosition;
 
-        private BezierTubeStructure(BezierTubeStructure parent, Transform transform, Random random) {
+        private BezierTubeStructure(BezierTubeStructure parent, Matrix4f transform, Random random) {
             prev = parent;
             this.random = random;
             if (prev != null) {
                 prev.next = this;
             }
             // calculate midpoint & endpoint
-            mid = new float[]{0, 0, 0};
-            transform.transformVector(mid);
-            end = new float[]{0, 0, 1};
-            transform.transformVector(end);
+//            mid = new float[]{0, 0, 0};
+            transform.transform(mid);
+//            end = new float[]{0, 0, 1};
+            transform.transform(end);
             // calculate radius (along x axis, we assume it is the same along the y)
-            float[] xunit = new float[]{1, 0, 0, 0};
-            transform.transformVector(xunit);
-            rad = (float) Math.sqrt(xunit[0] * xunit[0] + xunit[1] * xunit[1] + xunit[2] * xunit[2]);
+            Vector4f xunit = new Vector4f(1, 0, 0, 0);
+            transform.transform(xunit);
+            rad = (float) Math.sqrt(xunit.x * xunit.x + xunit.y * xunit.y + xunit.z * xunit.z);
             // build transformed bounding box from the local BB for a cylinder
             float rMax = rad * blockRadiusMultiplier.getMax();
             if (rMax < 0) {
                 rMax = 0;
             }
-            float[] bb = new float[]{-rMax, -rMax, -1, rMax, rMax, 1};
-            transform.transformBB(bb);
+            AABBf bb = new AABBf(-rMax, -rMax, -1, rMax, rMax, 1);
+            bb.transform(transform);
 
-            float minX = Math.min(bb[0], bb[3]);
-            float minY = Math.min(bb[1], bb[4]);
-            float minZ = Math.min(bb[2], bb[5]);
 
-            minPosition = new Vector3i(Math.roundUsing(minX, RoundingMode.FLOOR), Math.roundUsing(minY,
-                RoundingMode.FLOOR), Math.roundUsing(minZ, RoundingMode.FLOOR));
 
-            float maxX = Math.max(bb[0], bb[3]);
-            float maxY = Math.max(bb[1], bb[4]);
-            float maxZ = Math.max(bb[2], bb[5]);
+            minPosition = new Vector3i(Math.roundUsing(bb.minX, RoundingMode.FLOOR), Math.roundUsing(bb.minY,
+                RoundingMode.FLOOR), Math.roundUsing(bb.minZ, RoundingMode.FLOOR));
 
-            maxPosition = new Vector3i(Math.roundUsing(maxX + 1, RoundingMode.FLOOR), Math.roundUsing(maxY + 1,
-                RoundingMode.FLOOR), Math.roundUsing(maxZ + 1, RoundingMode.FLOOR));
+
+            maxPosition = new Vector3i(Math.roundUsing(bb.maxX + 1, RoundingMode.FLOOR), Math.roundUsing(bb.maxY + 1,
+                RoundingMode.FLOOR), Math.roundUsing(bb.maxZ + 1, RoundingMode.FLOOR));
 
             // construct a persistent context for interpolation loops
             context = new InterpolationContext();
-            mat = transform.identity();
+            mat = new Matrix4f();
         }
 
         /**
@@ -237,19 +233,19 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
         public void interpolatePosition(float[] pos, float t) {
             if (t > 0 && next != null) { // valid forward neighbor
                 float nt = 1 - t;
-                pos[0] = nt * nt * mid[0] + 2 * t * nt * end[0] + t * t * next.mid[0];
-                pos[1] = nt * nt * mid[1] + 2 * t * nt * end[1] + t * t * next.mid[1];
-                pos[2] = nt * nt * mid[2] + 2 * t * nt * end[2] + t * t * next.mid[2];
+                pos[0] = nt * nt * mid.x + 2 * t * nt * end.x + t * t * next.mid.x;
+                pos[1] = nt * nt * mid.y + 2 * t * nt * end.y + t * t * next.mid.y;
+                pos[2] = nt * nt * mid.z + 2 * t * nt * end.z + t * t * next.mid.z;
             } else if (t < 0 && prev != null) { // valid backward neighbor
                 float nt = 1 + t;
-                pos[0] = nt * nt * mid[0] - 2 * t * nt * prev.end[0] + t * t * prev.mid[0];
-                pos[1] = nt * nt * mid[1] - 2 * t * nt * prev.end[1] + t * t * prev.mid[1];
-                pos[2] = nt * nt * mid[2] - 2 * t * nt * prev.end[2] + t * t * prev.mid[2];
+                pos[0] = nt * nt * mid.x - 2 * t * nt * prev.end.x + t * t * prev.mid.x;
+                pos[1] = nt * nt * mid.y - 2 * t * nt * prev.end.y + t * t * prev.mid.y;
+                pos[2] = nt * nt * mid.z - 2 * t * nt * prev.end.z + t * t * prev.mid.z;
             } else { // no neighbor in specified direction - simple linear interpolation
                 float nt = 1 - 2 * t;
-                pos[0] = nt * mid[0] + 2 * t * end[0];
-                pos[1] = nt * mid[1] + 2 * t * end[1];
-                pos[2] = nt * mid[2] + 2 * t * end[2];
+                pos[0] = nt * mid.x + 2 * t * end.x;
+                pos[1] = nt * mid.y + 2 * t * end.y;
+                pos[2] = nt * mid.z + 2 * t * end.z;
             }
         }
 
@@ -262,17 +258,17 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
          */
         public void interpolateDerivative(float[] der, float t) {
             if (t > 0 && next != null) { // valid forward neighbor
-                der[0] = 2 * ((1 - t) * (end[0] - mid[0]) + t * (next.mid[0] - end[0]));
-                der[1] = 2 * ((1 - t) * (end[1] - mid[1]) + t * (next.mid[1] - end[1]));
-                der[2] = 2 * ((1 - t) * (end[2] - mid[2]) + t * (next.mid[2] - end[2]));
+                der[0] = 2 * ((1 - t) * (end.x - mid.x) + t * (next.mid.x - end.x));
+                der[1] = 2 * ((1 - t) * (end.y - mid.y) + t * (next.mid.y - end.y));
+                der[2] = 2 * ((1 - t) * (end.z - mid.z) + t * (next.mid.z - end.z));
             } else if (t < 0 && prev != null) { // valid backward neighbor
-                der[0] = 2 * ((1 + t) * (mid[0] - prev.end[0]) - t * (prev.end[0] - prev.mid[0]));
-                der[1] = 2 * ((1 + t) * (mid[1] - prev.end[1]) - t * (prev.end[1] - prev.mid[1]));
-                der[2] = 2 * ((1 + t) * (mid[2] - prev.end[2]) - t * (prev.end[2] - prev.mid[2]));
+                der[0] = 2 * ((1 + t) * (mid.x - prev.end.x) - t * (prev.end.x - prev.mid.x));
+                der[1] = 2 * ((1 + t) * (mid.y - prev.end.y) - t * (prev.end.y - prev.mid.y));
+                der[2] = 2 * ((1 + t) * (mid.z - prev.end.z) - t * (prev.end.z - prev.mid.z));
             } else { // no neighbor in specified direction
-                der[0] = 2 * (end[0] - mid[0]);
-                der[1] = 2 * (end[1] - mid[1]);
-                der[2] = 2 * (end[2] - mid[2]);
+                der[0] = 2 * (end.x - mid.x);
+                der[1] = 2 * (end.y - mid.y);
+                der[2] = 2 * (end.z - mid.z);
             }
         }
 
@@ -313,7 +309,7 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
             float minR2 = minR * minR;
 
             // interpolate over segment
-            float[] pos = new float[3];
+            Vector4f pos = new Vector4f();
             int innerStep = 1;
             context.init(0, true);
             do {
@@ -328,7 +324,7 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
                 // build transformation
                 mat.identity();
                 mat.translate(context.pos[0], context.pos[1], context.pos[2]);
-                mat.rotateZInto(context.der[0], context.der[1], context.der[2]);
+                mat.rotateTowards(0,1,0, context.der[0], context.der[1], context.der[2]);
                 mat.scale(context.radius, context.radius, innerStep);
 
                 Vector3i blockPos = new Vector3i();
@@ -336,11 +332,11 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
                 // iterate through blocks in the local XY plane
                 for (int x = -stepCount; x < stepCount; x++) {
                     for (int y = -stepCount; y < stepCount; y++) {
-                        pos[0] = x * step;
-                        pos[1] = y * step;
-                        pos[2] = 0;
+                        pos.x = x * step;
+                        pos.y = y * step;
+                        pos.z = 0;
                         // check radius
-                        float r2 = pos[0] * pos[0] + pos[1] * pos[1];
+                        float r2 = pos.x * pos.x + pos.y * pos.y;
                         if (r2 > maxR2) {
                             continue; // block is outside maximum possible radius
                         }
@@ -354,10 +350,10 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
                             continue; // blocks must pass random check for very thin tubes
                         }
                         // transform into world coordinates
-                        mat.transformVector(pos);
-                        int baseX = (int) Math.floor(pos[0]) - innerStep / 2;
-                        int baseY = (int) Math.floor(pos[1]) - innerStep / 2;
-                        int baseZ = (int) Math.floor(pos[2]) - innerStep / 2;
+                        mat.transform(pos);
+                        int baseX = (int) Math.floor(pos.x) - innerStep / 2;
+                        int baseY = (int) Math.floor(pos.y) - innerStep / 2;
+                        int baseZ = (int) Math.floor(pos.z) - innerStep / 2;
                         // iterate over inner group
                         for (int blockX = baseX; blockX < innerStep + baseX; blockX++) {
                             for (int blockY = baseY; blockY < innerStep + baseY; blockY++) {
@@ -495,14 +491,14 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
 
 
     private final class SolidSphereStructure implements Structure {
-        protected final Transform mat;
-        protected final Transform invMat;
+        protected final Matrix4f mat;
+        protected final Matrix4f invMat;
         private Vector3i minPosition;
         private Vector3i maxPosition;
         private Vector3ic chunkSize;
         private Random random;
 
-        public SolidSphereStructure(Transform transform, Vector3ic chunkSize, Random random) {
+        public SolidSphereStructure(Matrix4f transform, Vector3ic chunkSize, Random random) {
             this.chunkSize = chunkSize;
             this.random = random;
             // build transformed bounding box from the local BB for a unit sphere
@@ -510,24 +506,16 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
             if (rMax < 0) {
                 rMax = 0;
             }
-            float[] bb = new float[]{-rMax, -rMax, -rMax, rMax, rMax, rMax};
-            transform.transformBB(bb);
-            float minX = Math.min(bb[0], bb[3]);
-            float minY = Math.min(bb[1], bb[4]);
-            float minZ = Math.min(bb[2], bb[5]);
 
-            minPosition = new Vector3i(Math.roundUsing(minX, RoundingMode.FLOOR), Math.roundUsing(minY, RoundingMode.FLOOR), Math.roundUsing(minZ, RoundingMode.FLOOR));
-
-            float maxX = Math.max(bb[0], bb[3]);
-            float maxY = Math.max(bb[1], bb[4]);
-            float maxZ = Math.max(bb[2], bb[5]);
-
-            maxPosition = new Vector3i(Math.roundUsing(maxX + 1, RoundingMode.FLOOR), Math.roundUsing(maxY + 1, RoundingMode.FLOOR), Math.roundUsing(maxZ + 1, RoundingMode.FLOOR));
+            AABBf aabb = new AABBf(-rMax, -rMax, -rMax, rMax, rMax, rMax);
+            aabb.transform(transform);
+            minPosition = new Vector3i(Math.roundUsing(aabb.minX, RoundingMode.FLOOR), Math.roundUsing(aabb.minY, RoundingMode.FLOOR), Math.roundUsing(aabb.minZ, RoundingMode.FLOOR));
+            maxPosition = new Vector3i(Math.roundUsing(aabb.maxX + 1, RoundingMode.FLOOR), Math.roundUsing(aabb.maxY + 1, RoundingMode.FLOOR), Math.roundUsing(aabb.maxZ + 1, RoundingMode.FLOOR));
 
             // store transforms
-            mat = transform.clone();
+            mat = new Matrix4f(transform);
             if (transform.determinant() != 0) {
-                invMat = transform.inverse();
+                invMat = transform.invert(new Matrix4f());
             } else {
                 invMat = null; // at least one axis of sphere has zero length
             }
@@ -550,7 +538,7 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
             }
             minR2 *= minR2;
             // iterate through blocks
-            float[] pos = new float[3];
+            Vector4f pos = new Vector4f();
             for (int x = Math.max(0, minPosition.x); x <= Math.min(chunkSize.x() - 1, maxPosition.x); x++) {
                 for (int y = Math.max(0, minPosition.y); y <= Math.min(chunkSize.y() - 1, maxPosition.y); y++) {
                     for (int z = Math.max(0, minPosition.z); z <= Math.min(chunkSize.z() - 1, maxPosition.z); z++) {
@@ -558,12 +546,12 @@ public class VeinsStructureDefinition extends AbstractMultiChunkStructureDefinit
                             continue;
                         }
                         // transform into local coordinates
-                        pos[0] = x + 0.5F;
-                        pos[1] = y + 0.5F;
-                        pos[2] = z + 0.5F;
-                        invMat.transformVector(pos);
+                        pos.x = x + 0.5F;
+                        pos.y = y + 0.5F;
+                        pos.z = z + 0.5F;
+                        invMat.transform(pos);
                         // check radius
-                        float r2 = pos[0] * pos[0] + pos[1] * pos[1] + pos[2] * pos[2];
+                        float r2 = pos.x * pos.x + pos.y * pos.y + pos.z * pos.z;
                         if (r2 > maxR2) {
                             continue; // block is outside maximum possible radius
                         }
