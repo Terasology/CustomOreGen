@@ -1,4 +1,4 @@
-// Copyright 2020 The Terasology Foundation
+// Copyright 2021 The Terasology Foundation
 // SPDX-License-Identifier: Apache-2.0
 package org.terasology.sampleCaves.generation;
 
@@ -6,11 +6,11 @@ import org.terasology.customOreGen.PDist;
 import org.terasology.customOreGen.Structure;
 import org.terasology.customOreGen.StructureDefinition;
 import org.terasology.customOreGen.VeinsStructureDefinition;
-import org.terasology.engine.entitySystem.Component;
 import org.terasology.engine.world.generation.ConfigurableFacetProvider;
 import org.terasology.engine.world.generation.FacetProvider;
 import org.terasology.engine.world.generation.GeneratingRegion;
 import org.terasology.engine.world.generation.Produces;
+import org.terasology.gestalt.entitysystem.component.Component;
 import org.terasology.nui.properties.Range;
 
 import java.util.Collection;
@@ -74,12 +74,19 @@ public class SampleCaveFacetProvider implements ConfigurableFacetProvider, Facet
         this.configuration = (CaveFacetProviderConfiguration) configuration;
     }
 
-    private static class CaveFacetProviderConfiguration implements Component {
+    private static class CaveFacetProviderConfiguration implements Component<CaveFacetProviderConfiguration> {
         @Range(min = 0, max = 1f, increment = 0.01f, precision = 2, description = "Cave Frequency")
         public float frequency = 0.1f;
         @Range(min = 0, max = 25f, increment = 1f, precision = 0, description = "Cave Radius")
         public float caveRadius = 8f;
         @Range(min = 0, max = 10f, increment = 1f, precision = 0, description = "Tunnel Radius")
         public float tunnelRadius = 4f;
+
+        @Override
+        public void copy(CaveFacetProviderConfiguration other) {
+            this.frequency = other.frequency;
+            this.caveRadius = other.caveRadius;
+            this.tunnelRadius = other.tunnelRadius;
+        }
     }
 }
