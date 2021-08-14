@@ -83,7 +83,7 @@ public class SampleCaveFacetProvider implements ConfigurableFacetProvider, Facet
         public float tunnelRadius = 4f;
 
         @Override
-        public void copy(CaveFacetProviderConfiguration other) {
+        public void copyFrom(CaveFacetProviderConfiguration other) {
             this.frequency = other.frequency;
             this.caveRadius = other.caveRadius;
             this.tunnelRadius = other.tunnelRadius;
